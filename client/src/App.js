@@ -1,23 +1,24 @@
 import logo from './logo.svg';
 import './App.css';
+import { useQuery } from '@apollo/client';
+import { DATA } from './query';
 
 function App() {
+  const { data, loading, error } = useQuery(DATA)
+
+  if(loading) {
+    return <div>Loading...</div>
+  }
+
+  if(error) {
+    return <div>Error</div>
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h3>GraphQl Integration with React</h3>
+      <div>
+        <h6>{data?.hello}</h6>
+      </div>
     </div>
   );
 }
