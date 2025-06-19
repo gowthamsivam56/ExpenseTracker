@@ -3,6 +3,7 @@ import { ApolloServer } from "@apollo/server";
 import cors from 'cors';
 import { expressMiddleware } from '@apollo/server/express4';
 // import bodyParser from 'body-parser';
+import { connectDB } from './clients/mongo';
 
 
 const typeDefs = `
@@ -20,6 +21,7 @@ const resolvers = {
 // Set up Apollo Server
 const startServer = async () => {
     const app = express();
+    await connectDB();
 
     const server = new ApolloServer ({
         typeDefs,
