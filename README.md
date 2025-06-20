@@ -36,7 +36,8 @@ touch src/main.ts
 
 npm run dev
 
-npm start
+//npm start
+npm install mongodb
 
 
 
