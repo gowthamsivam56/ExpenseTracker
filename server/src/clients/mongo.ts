@@ -13,3 +13,11 @@ export async function connectDB() {
         throw error;
     }
 }
+
+export async function getUser() {
+    try {
+        return await client.db('myDb').collection("mycollection").find().toArray();
+    } catch (e: any) {
+        throw new Error(`Failed to get user from database: ${e.message}`);
+    }
+}

@@ -4,19 +4,23 @@ import cors from 'cors';
 import { expressMiddleware } from '@apollo/server/express4';
 // import bodyParser from 'body-parser';
 import { connectDB } from './clients/mongo';
+import { resolvers } from './gql/resolvers';
+import { readFileSync } from 'fs';
 
 
-const typeDefs = `
-    type Query {
-        hello: String
-    }
-`;
+// const typeDefs = `
+//     type Query {
+//         hello: String
+//     }
+// `;
 
-const resolvers = {
-    Query: {
-        hello: () => "Hello World!",
-    },
-};
+// const resolvers = {
+//     Query: {
+//         hello: () => "Hello World!",
+//     },
+// };
+
+const typeDefs = readFileSync(__dirname + '/gql/schema.gql', 'utf8');
 
 // Set up Apollo Server
 const startServer = async () => {

@@ -1,0 +1,8 @@
+type user {
+    firstName: String
+    age: String
+}
+
+type Query {
+    getUser: user
+}
