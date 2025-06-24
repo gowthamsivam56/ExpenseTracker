@@ -4,5 +4,5 @@ type user {
 }
 
 type Query {
-    getUser: user
+    getUser: [user]
 }
