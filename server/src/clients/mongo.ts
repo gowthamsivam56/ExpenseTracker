@@ -20,4 +20,12 @@ export async function getUser() {
     } catch (e: any) {
         throw new Error(`Failed to get user from database: ${e.message}`);
     }
-}
+};
+
+export async function addUser(firstName: String, age: String) {
+    try {
+        return await client.db('myDb').collection("mycollection").insertOne({firstName, age});
+    } catch (e: any) {
+        throw new Error(`Failed to add user in database: ${e.message}`);
+    }
+};

@@ -1,3 +1,20 @@
+interface MutationResponse {
+  code: String
+  success: Boolean!
+  message: String
+}
+
+input InfoInput {
+    firstName: String
+    age: String
+}
+
+type Response implements MutationResponse {
+    code: String
+    success: Boolean!
+    message: String
+}
+
 type user {
     firstName: String
     age: String
@@ -5,4 +22,8 @@ type user {
 
 type Query {
     getUser: [user]
+}
+
+type Mutation {
+    addUser(info: InfoInput!): Response!
 }
