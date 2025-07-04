@@ -47,3 +47,6 @@ npx create-react-app client
 cd client
 npm start
 npm install graphql @apollo/client
+npm install @mui/material @emotion/react @emotion/styled
+npm install @mui/icons-material
+npm install @mui/system     // optional
