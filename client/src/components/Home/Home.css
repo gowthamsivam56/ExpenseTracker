@@ -1,0 +1,12 @@
+.myContainer {
+
+  background: rgba(255, 255, 255, 0.25);  /* semi-transparent white */
+  backdrop-filter: blur(20px);             /* strong blur for frosted effect */
+  -webkit-backdrop-filter: blur(20px);     /* Safari support */
+  border-radius: 20px;                     /* smooth rounded corners */
+  border: 1px solid rgba(255, 255, 255, 0.18); /* subtle edge highlight */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);   /* soft shadow for depth */ 
+  
+  margin-top: 80px; 
+  padding: 30px;  
+}
