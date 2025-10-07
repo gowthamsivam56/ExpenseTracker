@@ -1,12 +1,45 @@
 .myContainer {
-
-  background: rgba(255, 255, 255, 0.25);  /* semi-transparent white */
-  backdrop-filter: blur(20px);             /* strong blur for frosted effect */
-  -webkit-backdrop-filter: blur(20px);     /* Safari support */
-  border-radius: 20px;                     /* smooth rounded corners */
-  border: 1px solid rgba(255, 255, 255, 0.18); /* subtle edge highlight */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);   /* soft shadow for depth */ 
-  
-  margin-top: 80px; 
-  padding: 30px;  
+  padding: 20px 20px;
+  margin: 50px 50px; 
 }
+
+.background {
+  background: rgba(255, 255, 255, 0.15) !important; /* lighter, more transparent */
+  backdrop-filter: blur(15px);             /* softer blur */
+  -webkit-backdrop-filter: blur(15px);     /* Safari support */
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.3); /* subtle, brighter border */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05); /* soft shadow for depth */
+}
+
+
+.buttonGreen {
+  background-color: rgba(36, 150, 64, 0.85) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(36, 150, 64, 0.9) !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.buttonGreen:hover {
+  background-color: rgba(36, 150, 64, 1) !important;
+}
+
+
+.buttonRed {
+  background-color: rgba(180, 30, 30, 0.85) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(180, 30, 30, 0.9) !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.buttonRed:hover {
+  background-color: rgba(180, 30, 30, 1) !important;
+}
+
+.MuiMonthCalendar-root,
+.MuiYearCalendar-root {
+  width: 100% !important;
+}
+
