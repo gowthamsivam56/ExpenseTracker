@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Container, Grid } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import IconButton from "@mui/material/IconButton";
@@ -100,16 +100,20 @@ const rows = [
 
 const Home = () => {
   const { mode, toggleTheme } = useContext(ThemeToggleContext);
+  const theme = useTheme();
 
   return (
     <Container
       maxWidth="md"
-      className="myContainer background container_shadow"
-      fixed
+      // className="myContainer"
+      sx={{ ...theme.glassCard }}
     >
       <Grid container spacing={2}>
         <Grid size={{ xs: 1 }} sx={{ alignContent: "center" }}>
-          <Tooltip title= { mode === "dark" ? "Dark Mode" : "Light Mode"}  placement="bottom-end">
+          <Tooltip
+            title={mode === "dark" ? "Dark Mode" : "Light Mode"}
+            placement="bottom-end"
+          >
             <FormControlLabel
               control={
                 <MaterialUISwitch sx={{ m: 1 }} checked={mode === "dark"} />
@@ -138,7 +142,7 @@ const Home = () => {
           </Tooltip>
         </Grid>
         <Grid size={{ xs: 12 }}>
-          <Divider className="background" />
+          <Divider sx={{ ...theme.glassCard }} />
         </Grid>
 
         <Grid size={{ xs: 6 }}>
@@ -150,14 +154,13 @@ const Home = () => {
         <Grid size={{ xs: 6 }}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar
-              className="background"
-              sx={{ width: "100%" }}
+              sx={{ ...theme.glassCard, width: "100%" }}
               views={["year", "month", "day"]}
             />
           </LocalizationProvider>
         </Grid>
         <Grid container size={{ xs: 6 }} direction="column" spacing={2}>
-          <Card className="background">
+          <Card sx={{ ...theme.glassCard }}>
             <CardActionArea>
               <CardContent sx={{ height: "158px" }}>
                 <Typography variant="h5">Total Income</Typography>
@@ -167,7 +170,7 @@ const Home = () => {
               </CardContent>
             </CardActionArea>
           </Card>
-          <Card className="background">
+          <Card sx={{ ...theme.glassCard }}>
             <CardActionArea>
               <CardContent sx={{ height: "158px" }}>
                 <Typography variant="h5">Available Balance</Typography>
@@ -179,7 +182,7 @@ const Home = () => {
           </Card>
         </Grid>
         <Grid size={{ xs: 12 }}>
-          <TableContainer className="background" component={Paper}>
+          <TableContainer sx={{ ...theme.glassCard }} component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
@@ -195,7 +198,7 @@ const Home = () => {
                   <TableCell align="right">
                     <Typography variant="h5">Amount</Typography>
                   </TableCell>
-                  <TableCell/>
+                  <TableCell />
                 </TableRow>
               </TableHead>
               <TableBody>

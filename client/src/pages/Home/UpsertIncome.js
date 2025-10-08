@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -29,6 +29,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 const UpsertIncome = () => {
+  const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -42,8 +43,8 @@ const UpsertIncome = () => {
     <React.Fragment>
       <Button
         variant="contained"
-        className="background buttonGreen"
-        sx={{ p: 2 }}
+        className="buttonGreen"
+        sx={{ ...theme.glassCard, p: 2 }}
         onClick={handleClickOpen}
         fullWidth
       >
