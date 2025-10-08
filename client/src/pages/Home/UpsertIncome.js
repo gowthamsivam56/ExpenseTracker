@@ -1,36 +1,35 @@
-import React from 'react';
-import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs from 'dayjs';
-import { TextField } from '@mui/material';
-import Grid from '@mui/material/Grid';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-
+import React from "react";
+import Button from "@mui/material/Button";
+import { styled } from "@mui/material/styles";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Typography from "@mui/material/Typography";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import { TextField } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
+  "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
   },
-  '& .MuiDialogActions-root': {
+  "& .MuiDialogActions-root": {
     padding: theme.spacing(1),
   },
 }));
 
 const UpsertIncome = () => {
-const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -40,10 +39,16 @@ const [open, setOpen] = React.useState(false);
   };
 
   return (
-    <React.Fragment >
-        <Button variant="contained" className="background buttonGreen"  sx={{ p: 2 }} onClick={handleClickOpen} fullWidth>
-            Add Income
-        </Button>
+    <React.Fragment>
+      <Button
+        variant="contained"
+        className="background buttonGreen"
+        sx={{ p: 2 }}
+        onClick={handleClickOpen}
+        fullWidth
+      >
+        Add Income
+      </Button>
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
@@ -56,7 +61,7 @@ const [open, setOpen] = React.useState(false);
           aria-label="close"
           onClick={handleClose}
           sx={(theme) => ({
-            position: 'absolute',
+            position: "absolute",
             right: 8,
             top: 8,
             color: theme.palette.grey[500],
@@ -68,11 +73,20 @@ const [open, setOpen] = React.useState(false);
           <Grid container spacing={2}>
             <Grid size={{ xs: 6 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker label="Date" defaultValue={dayjs(new Date())} fullWidth/>
+                <DatePicker
+                  label="Date"
+                  defaultValue={dayjs(new Date())}
+                  fullWidth
+                />
               </LocalizationProvider>
             </Grid>
             <Grid size={{ xs: 6 }}>
-              <TextField id="amount" label="Amount" variant="outlined" fullWidth/>
+              <TextField
+                id="amount"
+                label="Amount"
+                variant="outlined"
+                fullWidth
+              />
             </Grid>
             <Grid size={{ xs: 12 }}>
               <FormControl fullWidth>
@@ -91,7 +105,12 @@ const [open, setOpen] = React.useState(false);
               </FormControl>
             </Grid>
             <Grid size={{ xs: 12 }}>
-              <TextField id="description" label="Description" variant="outlined" fullWidth/>
+              <TextField
+                id="description"
+                label="Description"
+                variant="outlined"
+                fullWidth
+              />
             </Grid>
           </Grid>
         </DialogContent>
@@ -106,6 +125,6 @@ const [open, setOpen] = React.useState(false);
       </BootstrapDialog>
     </React.Fragment>
   );
-}
+};
 
-export default UpsertIncome
+export default UpsertIncome;

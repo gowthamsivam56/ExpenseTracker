@@ -1,25 +1,12 @@
-import logo from './logo.svg';
-import './App.css';
-import { useQuery } from '@apollo/client';
-import { DATA, GET_USER } from './query';
-import { Container, Grid } from '@mui/material';
-import Home from './pages/Home/Home';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-
-const darkTheme = createTheme({
-  palette: {
-    mode: 'light',
-  },
-});
+import "./App.css";
+import Home from "./pages/Home/Home";
+import ThemeProviderWrapper from "./theme/ThemeProviderWrapper";
 
 function App() {
-
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
+    <ThemeProviderWrapper>
       <Home />
-    </ThemeProvider>
+    </ThemeProviderWrapper>
   );
 }
 

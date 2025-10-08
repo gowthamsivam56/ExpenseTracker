@@ -12,6 +12,15 @@
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05); /* soft shadow for depth */
 }
 
+.dark{
+  background: rgba(0, 0, 0, 0.35) !important;   /* darker, semi-transparent */
+  backdrop-filter: blur(15px) saturate(150%);   /* blur + slight saturation boost */
+  -webkit-backdrop-filter: blur(15px) saturate(150%);
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);   /* subtle light border for definition */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);    /* deeper shadow for contrast */
+  color: rgba(255, 255, 255, 0.85);             /* ensure readable text */
+}
 
 .buttonGreen {
   background-color: rgba(36, 150, 64, 0.85) !important;
