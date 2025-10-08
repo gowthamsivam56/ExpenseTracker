@@ -23,6 +23,7 @@ import TableRow from '@mui/material/TableRow';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import './Home.css';
+import UpsertIncome from './UpsertIncome';
 
 function createData(date, category, description, amount) {
   return { date, category, description, amount };
@@ -55,9 +56,7 @@ const Home = () => {
       <Divider className="background"/>
       <Grid container spacing={2} sx={{ marginTop: 3 }} direction="row">
         <Grid item sx={{ flex: 1, display: 'flex'}}>
-          <Button variant="contained" className="background buttonGreen"  sx={{ p: 2 }} fullWidth>
-            Add Income
-          </Button>
+          <UpsertIncome/>
         </Grid>
         <Grid item sx={{ flex: 1, display: 'flex'}} >
           <Button variant="contained" className="background buttonRed" sx={{ p: 2 }} fullWidth>

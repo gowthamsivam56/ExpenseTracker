@@ -3,7 +3,7 @@ import './App.css';
 import { useQuery } from '@apollo/client';
 import { DATA, GET_USER } from './query';
 import { Container, Grid } from '@mui/material';
-import Home from './components/Home/Home';
+import Home from './pages/Home/Home';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
