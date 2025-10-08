@@ -8,10 +8,10 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 import { TextField } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
@@ -68,7 +68,7 @@ const [open, setOpen] = React.useState(false);
           <Grid container spacing={2}>
             <Grid size={{ xs: 6 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker label="Basic date picker" fullWidth/>
+                  <DatePicker label="Date" defaultValue={dayjs(new Date())} fullWidth/>
               </LocalizationProvider>
             </Grid>
             <Grid size={{ xs: 6 }}>
@@ -84,9 +84,9 @@ const [open, setOpen] = React.useState(false);
                   label="Category"
                   // onChange={handleChange}
                 >
-                  <MenuItem value={10}>Food</MenuItem>
-                  <MenuItem value={20}>Movie</MenuItem>
-                  <MenuItem value={30}>subscription</MenuItem>
+                  <MenuItem>Salary</MenuItem>
+                  <MenuItem>Allowance</MenuItem>
+                  <MenuItem>Bonus</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

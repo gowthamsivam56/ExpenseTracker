@@ -23,6 +23,7 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import "./Home.css";
 import UpsertIncome from "./UpsertIncome";
+import UpsertExpense from "./UpertExpense";
 
 function createData(date, category, description, amount) {
   return { date, category, description, amount };
@@ -70,14 +71,7 @@ const Home = () => {
           <UpsertIncome />
         </Grid>
         <Grid size={{ xs: 6 }}>
-          <Button
-            variant="contained"
-            className="background buttonRed"
-            sx={{ p: 2 }}
-            fullWidth
-          >
-            Add Expense
-          </Button>
+          <UpsertExpense />
         </Grid>
         <Grid size={{ xs: 6 }}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
