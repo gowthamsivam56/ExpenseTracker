@@ -7,7 +7,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import Typography from "@mui/material/Typography";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -28,8 +27,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-const UpsertExpense = () => {
+const UpsertTransaction = (props) => {
   const theme = useTheme();
+  const { addType } = props;
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -43,25 +43,38 @@ const UpsertExpense = () => {
     <React.Fragment>
       <Button
         variant="contained"
-        className="buttonRed"
+        className={addType == "income" ? "buttonGreen" : "buttonRed"}
         sx={{ ...theme.glassCard, p: 2 }}
         onClick={handleClickOpen}
         fullWidth
       >
-        Add Expense
+        {addType === "income" ? "Add Income" : "Add Expense"}
       </Button>
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
+        slotProps={{
+          paper: {
+            sx: {
+              ...theme.glassCard,
+            },
+          },
+          backdrop: {
+            sx: {
+              background: document.body.style.background,
+            },
+          },
+        }}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Add Expense
+          {addType === "income" ? "Add Income" : "Add Expense"}
         </DialogTitle>
         <IconButton
           aria-label="close"
           onClick={handleClose}
           sx={(theme) => ({
+            ...theme.glassCard,
             position: "absolute",
             right: 8,
             top: 8,
@@ -72,16 +85,26 @@ const UpsertExpense = () => {
         </IconButton>
         <DialogContent dividers>
           <Grid container spacing={2}>
-            <Grid size={{ xs: 6 }}>
+            <Grid size={{ xs: 7 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="Date"
                   defaultValue={dayjs(new Date())}
-                  fullWidth
+                  views={["year", "month", "day"]}
+                  sx={{ width: "100%" }}
+                  slotProps={{
+                    popper: {
+                      sx: {
+                        "& .MuiPickerPopper-paper": {
+                          ...theme.glassCard,
+                        },
+                      },
+                    },
+                  }}
                 />
               </LocalizationProvider>
             </Grid>
-            <Grid size={{ xs: 6 }}>
+            <Grid size={{ xs: 5 }}>
               <TextField
                 id="amount"
                 label="Amount"
@@ -98,10 +121,27 @@ const UpsertExpense = () => {
                   // value={age}
                   label="Category"
                   // onChange={handleChange}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        ...theme.glassCard,
+                      },
+                    },
+                  }}
                 >
-                  <MenuItem>Food</MenuItem>
-                  <MenuItem>Movie</MenuItem>
-                  <MenuItem>subscription</MenuItem>
+                  {addType == "income" ? (
+                    <>
+                      <MenuItem>Salary</MenuItem>
+                      <MenuItem>Allowance</MenuItem>
+                      <MenuItem>Bonus</MenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <MenuItem>Food</MenuItem>
+                      <MenuItem>Movie</MenuItem>
+                      <MenuItem>subscription</MenuItem>
+                    </>
+                  )}
                 </Select>
               </FormControl>
             </Grid>
@@ -128,4 +168,4 @@ const UpsertExpense = () => {
   );
 };
 
-export default UpsertExpense;
+export default UpsertTransaction;

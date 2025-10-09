@@ -26,8 +26,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 
 import "./Home.css";
-import UpsertIncome from "./UpsertIncome";
-import UpsertExpense from "./UpertExpense";
+import UpsertTransaction from "./UpsertTransaction";
 import { ThemeToggleContext } from "../../theme/ThemeProviderWrapper";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
@@ -146,10 +145,10 @@ const Home = () => {
         </Grid>
 
         <Grid size={{ xs: 6 }}>
-          <UpsertIncome />
+          <UpsertTransaction addType={"income"} />
         </Grid>
         <Grid size={{ xs: 6 }}>
-          <UpsertExpense />
+          <UpsertTransaction addType={"expense"} />
         </Grid>
         <Grid size={{ xs: 6 }}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
