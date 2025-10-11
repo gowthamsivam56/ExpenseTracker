@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { gql, useMutation, useLazyQuery } from "@apollo/client";
 import { Container, Grid } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
@@ -24,7 +25,6 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-
 import "./Home.css";
 import UpsertTransaction from "./UpsertTransaction";
 import { ThemeToggleContext } from "../../theme/ThemeProviderWrapper";
@@ -85,6 +85,29 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
+const GET_TRANSACTION = gql`
+  query getTransaction {
+    getTransaction {
+      _id
+      date
+      category
+      description
+      amount
+      transactionType
+    }
+  }
+`;
+
+const DELETE_TRANSACTION_BY_ID = gql`
+  mutation deleteTransactionById ($_id: ID!) {
+    deleteTransactionById (_id: $_id) {
+      code
+      success
+      message
+    }
+  }
+`;
+
 function createData(date, category, description, amount) {
   return { date, category, description, amount };
 }
@@ -100,6 +123,41 @@ const rows = [
 const Home = () => {
   const { mode, toggleTheme } = useContext(ThemeToggleContext);
   const theme = useTheme();
+
+  const [getTransaction, { loading, data, refetch: getTransactionRefetch }] = useLazyQuery(
+    GET_TRANSACTION,
+    {
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "no-cache",
+      onCompleted(data) {},
+      onError(error) {
+        // showError(error);
+      },
+    }
+  );
+
+  const [deleteTransactionById, { loading: deleteTransactionByIdLoading, error: deleteTransactionByIdError, data: deleteTransactionByIdData }] = useMutation(DELETE_TRANSACTION_BY_ID, {
+      onCompleted(data) {
+        if (data.deleteTransactionById.success === true) {
+          // showSuccess(messages.cpeRebootSuccess);
+          getTransactionRefetch();
+        }
+        else {
+          // showError(data?.rebootSystem);
+        }
+      },
+      onError(error) {
+        console.log(`error`);
+      }
+    });
+
+  const handleDelete = async(_id) => {
+    await deleteTransactionById({ variables: {_id} });
+  }
+
+  React.useEffect(() => {
+    getTransaction();
+  }, []);
 
   return (
     <Container
@@ -145,10 +203,16 @@ const Home = () => {
         </Grid>
 
         <Grid size={{ xs: 6 }}>
-          <UpsertTransaction addType={"income"} />
+          <UpsertTransaction
+            transactionType={"income"}
+            getTransaction={getTransaction}
+          />
         </Grid>
         <Grid size={{ xs: 6 }}>
-          <UpsertTransaction addType={"expense"} />
+          <UpsertTransaction
+            transactionType={"expense"}
+            getTransaction={getTransaction}
+          />
         </Grid>
         <Grid size={{ xs: 6 }}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -201,12 +265,21 @@ const Home = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
+                {data?.getTransaction?.map((data) => (
                   <TableRow>
-                    <TableCell>{row.date}</TableCell>
-                    <TableCell>{row.category}</TableCell>
-                    <TableCell>{row.description}</TableCell>
-                    <TableCell align="right">{row.amount}</TableCell>
+                    <TableCell>{data?.date}</TableCell>
+                    <TableCell>{data?.category}</TableCell>
+                    <TableCell>{data?.description}</TableCell>
+                    <TableCell align="right">
+                      <Typography
+                        color={
+                          data?.transactionType === "income" ? "green" : "red"
+                        }
+                      >
+                        {data?.transactionType === "income" ? "+" : "-"}{" "}
+                        {data?.amount}
+                      </Typography>
+                    </TableCell>
                     <TableCell>
                       <Tooltip title="Edit">
                         <IconButton>
@@ -215,7 +288,7 @@ const Home = () => {
                       </Tooltip>
                       <Tooltip title="Delete">
                         <IconButton>
-                          <DeleteOutlineOutlinedIcon />
+                          <DeleteOutlineOutlinedIcon onClick={() => handleDelete(data?._id)}/>
                         </IconButton>
                       </Tooltip>
                     </TableCell>

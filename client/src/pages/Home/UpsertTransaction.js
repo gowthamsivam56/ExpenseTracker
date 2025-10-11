@@ -1,4 +1,5 @@
 import React from "react";
+import { gql, useMutation } from "@apollo/client";
 import Button from "@mui/material/Button";
 import { styled, useTheme } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
@@ -27,15 +28,45 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
+const ADD_TRANSACTION = gql`
+  mutation addTransaction ($date: String!, $category: String!, $description: String!, $amount: Float!, $transactionType: String!) {
+    addTransaction (date: $date, category: $category, description: $description, amount: $amount, transactionType: $transactionType) {
+      code
+      success
+      message
+    }
+  }
+`;
+
 const UpsertTransaction = (props) => {
   const theme = useTheme();
-  const { addType } = props;
+  const { transactionType, getTransaction } = props;
   const [open, setOpen] = React.useState(false);
+  const [amount, setAmount] = React.useState('');
+
+
+
+  const [addTransaction, { loading: transactionLoading, error: transactionError, data: transactionData }] = useMutation(ADD_TRANSACTION, {
+    onCompleted(data) {
+      if (data.addTransaction.success === true) {
+        // showSuccess(messages.cpeRebootSuccess);
+        getTransaction();
+      }
+      else {
+        // showError(data?.rebootSystem);
+      }
+    },
+    onError(error) {
+      console.log(`error`);
+    }
+  });
+
 
   const handleClickOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
+    addTransaction({variables:{date:"2025-10-01", category:"Food", description:"Lunch at Subway", amount:12.5, transactionType}});
     setOpen(false);
   };
 
@@ -43,12 +74,12 @@ const UpsertTransaction = (props) => {
     <React.Fragment>
       <Button
         variant="contained"
-        className={addType == "income" ? "buttonGreen" : "buttonRed"}
+        className={transactionType == "income" ? "buttonGreen" : "buttonRed"}
         sx={{ ...theme.glassCard, p: 2 }}
         onClick={handleClickOpen}
         fullWidth
       >
-        {addType === "income" ? "Add Income" : "Add Expense"}
+        {transactionType === "income" ? "Add Income" : "Add Expense"}
       </Button>
       <BootstrapDialog
         onClose={handleClose}
@@ -68,7 +99,7 @@ const UpsertTransaction = (props) => {
         }}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          {addType === "income" ? "Add Income" : "Add Expense"}
+          {transactionType === "income" ? "Add Income" : "Add Expense"}
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -109,6 +140,10 @@ const UpsertTransaction = (props) => {
                 id="amount"
                 label="Amount"
                 variant="outlined"
+                // value={amount}
+                // onChange={(e) => {
+                //   setAmount(e.target.value);
+                // }}
                 fullWidth
               />
             </Grid>
@@ -129,7 +164,7 @@ const UpsertTransaction = (props) => {
                     },
                   }}
                 >
-                  {addType == "income" ? (
+                  {transactionType == "income" ? (
                     <>
                       <MenuItem>Salary</MenuItem>
                       <MenuItem>Allowance</MenuItem>
