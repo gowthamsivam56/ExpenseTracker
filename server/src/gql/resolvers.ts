@@ -1,10 +1,11 @@
-import { addUser, getUser } from "./provider";
+import { addTransaction, deleteTransactionById, getTransaction } from "./provider";
 
 export const resolvers = {
     Query: {
-        getUser : () => getUser(),
+        getTransaction : () => getTransaction(),
     },
     Mutation:{
-        addUser : (root: any,args: any) => addUser(args),
+        addTransaction : (root: any,args: any) => addTransaction(args),
+        deleteTransactionById : (root: any,args: any) => deleteTransactionById(args),
     }
 }

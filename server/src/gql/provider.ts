@@ -1,40 +1,62 @@
-import { getUser as getuser, addUser as adduser } from "../clients/mongo";
-import { GraphQLError } from 'graphql';
+import { addtransaction, deletetransactionById, gettransaction } from "../clients/mongo";
+import { GraphQLError } from "graphql";
 
-export async function getUser() {
-    try {
-        console.log(`getUser called....`);
-        return await getuser();
-    } catch (e: any ) {
-        throw new GraphQLError(e.message, {
-            extensions: {
-                code: 'E_GET_USER_ERROR'
-            }
-        });
+export async function getTransaction() {
+  try {
+    console.log(`getTransaction called....`);
+    const dbName = "expense_tracker";
+    return await gettransaction(dbName);
+  } catch (e: any) {
+    throw new GraphQLError(e.message, {
+      extensions: {
+        code: "E_GET_TRANSACTION_ERROR",
+      },
+    });
+  }
+}
+
+export async function addTransaction(args: any) {
+  try {
+    const { date, Category, Description, Amount } = args;
+    const dbName = "expense_tracker";
+    const data = await addtransaction(dbName, args);
+    console.log(`data`, data);
+    if (data) {
+      return {
+        code: "I_ADD_TRANSACTION",
+        success: true,
+        message: "Transaction added successfully",
+      };
+    } else {
+      return {
+        code: "E_ADD_TRANSACTION_FAILED",
+        success: false,
+        message: "Failed to add the transaction",
+      };
     }
-};
+  } catch (e: any) {
+    throw e.message;
+  }
+}
 
-export async function addUser(info: any ) {
-    try{
-        console.log(`addUser called.... Info:${JSON.stringify(info)}`);
-        const data = await adduser(info.firstName, info.age);
-        console.log(`data`,data);
-        if(data) {
-            return {
-                code: "I_ADD_USER_SUCCESS",
-                success: true,
-                message: "User added successfully"
-            }
-        }
-        else {
-            return {
-                code: "E_ADD_USER_FAILED",
-                success: false,
-                message: "Failed to add the user"
-            }
-        }
-
-    } catch (e:any) {
-        throw e.message;
+export async function deleteTransactionById({ _id }: any) {
+  try {
+    const dbName = "expense_tracker";
+    const data = await deletetransactionById(dbName, _id);
+    if (data) {
+      return {
+        code: "I_DELETE_TRANSACTION",
+        success: true,
+        message: "Transaction deleted successfully",
+      };
+    } else {
+      return {
+        code: "E_DELETE_TRANSACTION_FAILED",
+        success: false,
+        message: "Failed to delete the transaction",
+      };
     }
+  } catch (e: any) {
+    throw e.message;
+  }
 }

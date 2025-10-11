@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 
 
 const uri = 'mongodb://localhost:27017';
@@ -14,18 +14,29 @@ export async function connectDB() {
     }
 }
 
-export async function getUser() {
+export async function gettransaction(dbName: string) {
+    if (!dbName) throw new Error('Database client is not initialized.');
     try {
-        return await client.db('myDb').collection("mycollection").find().toArray();
+        return await client.db(dbName).collection("transaction").find().toArray();
     } catch (e: any) {
-        throw new Error(`Failed to get user from database: ${e.message}`);
+        throw new Error(`Failed to get transaction from database: ${e.message}`);
     }
 };
 
-export async function addUser(firstName: String, age: String) {
+export async function addtransaction( dbName: string, args: any) {
+    if (!dbName) throw new Error('Database client is not initialized.');
     try {
-        return await client.db('myDb').collection("mycollection").insertOne({firstName, age});
+        return await client.db(dbName).collection("transaction").insertOne(args);
     } catch (e: any) {
-        throw new Error(`Failed to add user in database: ${e.message}`);
+        throw new Error(`Failed to add transaction in database: ${e.message}`);
+    }
+};
+
+export async function deletetransactionById(dbName: string, _id: string) {
+    if (!dbName) throw new Error('Database client is not initialized.');
+    try {
+        return await client.db(dbName).collection("transaction").deleteOne({_id: new ObjectId(_id)});
+    } catch (e: any) {
+        throw new Error(`Failed to delete transaction by id from the database: ${e.message}`);
     }
 };

@@ -4,26 +4,26 @@ interface MutationResponse {
   message: String
 }
 
-input InfoInput {
-    firstName: String
-    age: String
-}
-
 type Response implements MutationResponse {
     code: String
     success: Boolean!
     message: String
 }
 
-type user {
-    firstName: String
-    age: String
+type transactionInfo {
+    _id: ID!
+    date: String
+    category: String
+    description: String
+    amount: Float
+    transactionType: String
 }
 
 type Query {
-    getUser: [user]
+    getTransaction: [transactionInfo]
 }
 
 type Mutation {
-    addUser(info: InfoInput!): Response!
+    addTransaction(date: String!, category: String!, description: String!, amount: Float!, transactionType: String!): Response!
+    deleteTransactionById(_id: ID!): Response!
 }
