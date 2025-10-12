@@ -15,7 +15,7 @@ type transactionInfo {
     date: String
     category: String
     description: String
-    amount: Float
+    amount: String
     transactionType: String
 }
 
@@ -24,6 +24,6 @@ type Query {
 }
 
 type Mutation {
-    addTransaction(date: String!, category: String!, description: String!, amount: Float!, transactionType: String!): Response!
+    addTransaction(date: String!, category: String!, description: String!, amount: String!, transactionType: String!): Response!
     deleteTransactionById(_id: ID!): Response!
 }
