@@ -162,8 +162,7 @@ const Home = () => {
   return (
     <Container
       maxWidth="md"
-      // className="myContainer"
-      sx={{ ...theme.glassCard }}
+      sx={{ ...theme.glassCard, padding: '20px', marginY: '50px', marginX: 'auto'}}
     >
       <Grid container spacing={2}>
         <Grid size={{ xs: 1 }} sx={{ alignContent: "center" }}>
@@ -245,7 +244,7 @@ const Home = () => {
           </Card>
         </Grid>
         <Grid size={{ xs: 12 }}>
-          <TableContainer sx={{ ...theme.glassCard }} component={Paper}>
+          <TableContainer sx={{ ...theme.glassCard, height: "435px" }} component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
@@ -267,7 +266,7 @@ const Home = () => {
               <TableBody>
                 {data?.getTransaction?.map((data) => (
                   <TableRow>
-                    <TableCell>{data?.date}</TableCell>
+                    <TableCell>{`${new Date(data?.date).getDate()}-${new Date(data?.date).getMonth()}-${new Date(data?.date).getFullYear()}`}</TableCell>
                     <TableCell>{data?.category}</TableCell>
                     <TableCell>{data?.description}</TableCell>
                     <TableCell align="right">

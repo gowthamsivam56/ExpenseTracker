@@ -102,23 +102,30 @@ const UpsertTransaction = (props) => {
     <Formik
       initialValues={{
         date: dayjs(new Date()),
+        amount: "",
         category: "",
         description: "",
-        amount: "",
       }}
       validate={(values) => {
         const errors = {};
-        //  if (!values.category) {
-        //    errors.category = 'Required';
-        //  }
+
+          if (!values.amount) {
+           errors.amount = 'Required';
+         }
+           if (!values.category) {
+           errors.category = 'Required';
+         }
+
+         if (!values.description) {
+           errors.description = 'Required';
+         }
+         
+         return errors;
       }}
       onSubmit={(values, { resetForm }) => {
         addTransaction({
           variables: {
-            date: dayjs(new Date()),
-            category: values.category,
-            description: values.description,
-            amount: values.amount,
+            ...values,
             transactionType,
           },
         });
@@ -126,7 +133,7 @@ const UpsertTransaction = (props) => {
         setOpen(false);
       }}
     >
-      {({ submitForm, isSubmitting, values }) => (
+      {({ submitForm, isSubmitting, values, setFieldValue }) => (
         <React.Fragment>
           <Button
             variant="contained"
@@ -178,10 +185,10 @@ const UpsertTransaction = (props) => {
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="Date"
-                      // defaultValue={dayjs(new Date())}
                       value={values.date}
                       views={["year", "month", "day"]}
                       sx={{ width: "100%" }}
+                      onChange={(newValue) => setFieldValue("date", newValue)}
                       slotProps={{
                         popper: {
                           sx: {
@@ -205,38 +212,6 @@ const UpsertTransaction = (props) => {
                   />
                 </Grid>
                 <Grid size={{ xs: 12 }}>
-                  {/* <FormControl fullWidth>
-                    <InputLabel id="category-select-label">Category</InputLabel>
-                    <Select
-                      labelId="category-select-label"
-                      name ="category"
-                      value={values.category}
-                      label="Category"
-                      // onChange={handleChange}
-                      MenuProps={{
-                        PaperProps: {
-                          sx: {
-                            ...theme.glassCard,
-                          },
-                        },
-                      }}
-                    >
-                      {transactionType == "income" ? (
-                        <>
-                          <MenuItem>Salary</MenuItem>
-                          <MenuItem>Allowance</MenuItem>
-                          <MenuItem>Bonus</MenuItem>
-                        </>
-                      ) : (
-                        <>
-                          <MenuItem>Food</MenuItem>
-                          <MenuItem>Movie</MenuItem>
-                          <MenuItem>subscription</MenuItem>
-                        </>
-                      )}
-                    </Select>
-                  </FormControl> */}
-
                   <Field
                     component={TextField}
                     select
@@ -244,6 +219,15 @@ const UpsertTransaction = (props) => {
                     label="Category"
                     variant="outlined"
                     fullWidth
+                    SelectProps={{
+                      MenuProps: {
+                        PaperProps: {
+                          sx: {
+                            ...theme.glassCard,
+                          },
+                        },
+                      },
+                    }}
                   >
                     {categories.map((cat) => (
                       <MenuItem key={cat.value} value={cat.value}>
