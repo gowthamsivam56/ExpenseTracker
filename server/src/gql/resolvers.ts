@@ -1,11 +1,12 @@
-import { addTransaction, deleteTransactionById, getTransaction } from "./provider";
+import { addTransaction, updateTransaction, deleteTransactionById, getTransaction } from "./provider";
 
 export const resolvers = {
     Query: {
-        getTransaction : () => getTransaction(),
+        getTransaction: () => getTransaction(),
     },
-    Mutation:{
-        addTransaction : (root: any,args: any) => addTransaction(args),
-        deleteTransactionById : (root: any,args: any) => deleteTransactionById(args),
+    Mutation: {
+        addTransaction: (root: any, args: any) => addTransaction(args),
+        updateTransaction: (root: any, args: any) => updateTransaction(args),
+        deleteTransactionById: (root: any, args: any) => deleteTransactionById(args),
     }
 }

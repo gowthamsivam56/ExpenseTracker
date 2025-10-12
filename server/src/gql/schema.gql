@@ -5,25 +5,26 @@ interface MutationResponse {
 }
 
 type Response implements MutationResponse {
-    code: String
-    success: Boolean!
-    message: String
+  code: String
+  success: Boolean!
+  message: String
 }
 
 type transactionInfo {
-    _id: ID!
-    date: String
-    category: String
-    description: String
-    amount: String
-    transactionType: String
+  _id: ID!
+  date: String
+  category: String
+  description: String
+  amount: String
+  transactionType: String
 }
 
 type Query {
-    getTransaction: [transactionInfo]
+  getTransaction: [transactionInfo]
 }
 
 type Mutation {
-    addTransaction(date: String!, category: String!, description: String!, amount: String!, transactionType: String!): Response!
-    deleteTransactionById(_id: ID!): Response!
+  addTransaction(date: String!, category: String!, description: String!, amount: String!, transactionType: String!): Response!
+  updateTransaction(_id: ID!, date: String!, category: String!, description: String!, amount: String!, transactionType: String!): Response!
+  deleteTransactionById(_id: ID!): Response!
 }
