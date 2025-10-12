@@ -7,7 +7,6 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Divider from "@mui/material/Divider";
-import Button from "@mui/material/Button";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
@@ -21,7 +20,6 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
@@ -129,7 +127,7 @@ const Home = () => {
     {
       notifyOnNetworkStatusChange: true,
       fetchPolicy: "no-cache",
-      onCompleted(data) {},
+      onCompleted(data) { },
       onError(error) {
         // showError(error);
       },
@@ -137,22 +135,22 @@ const Home = () => {
   );
 
   const [deleteTransactionById, { loading: deleteTransactionByIdLoading, error: deleteTransactionByIdError, data: deleteTransactionByIdData }] = useMutation(DELETE_TRANSACTION_BY_ID, {
-      onCompleted(data) {
-        if (data.deleteTransactionById.success === true) {
-          // showSuccess(messages.cpeRebootSuccess);
-          getTransactionRefetch();
-        }
-        else {
-          // showError(data?.rebootSystem);
-        }
-      },
-      onError(error) {
-        console.log(`error`);
+    onCompleted(data) {
+      if (data.deleteTransactionById.success === true) {
+        // showSuccess(messages.cpeRebootSuccess);
+        getTransactionRefetch();
       }
-    });
+      else {
+        // showError(data?.rebootSystem);
+      }
+    },
+    onError(error) {
+      console.log(`error`);
+    }
+  });
 
-  const handleDelete = async(_id) => {
-    await deleteTransactionById({ variables: {_id} });
+  const handleDelete = async (_id) => {
+    await deleteTransactionById({ variables: { _id } });
   }
 
   React.useEffect(() => {
@@ -162,7 +160,7 @@ const Home = () => {
   return (
     <Container
       maxWidth="md"
-      sx={{ ...theme.glassCard, padding: '20px', marginY: '50px', marginX: 'auto'}}
+      sx={{ ...theme.glassCard, padding: '20px', marginY: '50px', marginX: 'auto' }}
     >
       <Grid container spacing={2}>
         <Grid size={{ xs: 1 }} sx={{ alignContent: "center" }}>
@@ -204,13 +202,13 @@ const Home = () => {
         <Grid size={{ xs: 6 }}>
           <UpsertTransaction
             transactionType={"income"}
-            getTransaction={getTransaction}
+            getTransactionRefetch={getTransactionRefetch}
           />
         </Grid>
         <Grid size={{ xs: 6 }}>
           <UpsertTransaction
             transactionType={"expense"}
-            getTransaction={getTransaction}
+            getTransactionRefetch={getTransactionRefetch}
           />
         </Grid>
         <Grid size={{ xs: 6 }}>
@@ -266,7 +264,7 @@ const Home = () => {
               <TableBody>
                 {data?.getTransaction?.map((data) => (
                   <TableRow>
-                    <TableCell>{`${new Date(data?.date).getDate()}-${new Date(data?.date).getMonth()}-${new Date(data?.date).getFullYear()}`}</TableCell>
+                    <TableCell>{`${new Date(data?.date).getDate()}-${new Date(data?.date).getMonth() + 1}-${new Date(data?.date).getFullYear()}`}</TableCell>
                     <TableCell>{data?.category}</TableCell>
                     <TableCell>{data?.description}</TableCell>
                     <TableCell align="right">
@@ -280,14 +278,10 @@ const Home = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Tooltip title="Edit">
-                        <IconButton>
-                          <EditOutlinedIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <UpsertTransaction transactionType={data?.transactionType} getTransactionRefetch={getTransactionRefetch} getTransactionData={data} />
                       <Tooltip title="Delete">
                         <IconButton>
-                          <DeleteOutlineOutlinedIcon onClick={() => handleDelete(data?._id)}/>
+                          <DeleteOutlineOutlinedIcon onClick={() => handleDelete(data?._id)} />
                         </IconButton>
                       </Tooltip>
                     </TableCell>

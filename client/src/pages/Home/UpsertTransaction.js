@@ -15,10 +15,9 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { TextField } from "formik-mui";
 import Grid from "@mui/material/Grid";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import Tooltip from "@mui/material/Tooltip";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -30,20 +29,18 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 const ADD_TRANSACTION = gql`
-  mutation addTransaction(
-    $date: String!
-    $category: String!
-    $description: String!
-    $amount: String!
-    $transactionType: String!
-  ) {
-    addTransaction(
-      date: $date
-      category: $category
-      description: $description
-      amount: $amount
-      transactionType: $transactionType
-    ) {
+  mutation addTransaction($date: String!, $category: String!, $description: String!, $amount: String!, $transactionType: String!) {
+    addTransaction(date: $date, category: $category, description: $description, amount: $amount, transactionType: $transactionType) {
+      code
+      success
+      message
+    }
+  }
+`;
+
+const UPDATE_TRANSACTION = gql`
+  mutation updateTransaction($_id: ID!, $date: String!, $category: String!, $description: String!, $amount: String!, $transactionType: String!) {
+    updateTransaction(_id: $_id, date: $date, category: $category, description: $description, amount: $amount, transactionType: $transactionType) {
       code
       success
       message
@@ -53,35 +50,40 @@ const ADD_TRANSACTION = gql`
 
 const UpsertTransaction = (props) => {
   const theme = useTheme();
-  const { transactionType, getTransaction } = props;
+  const { transactionType, getTransactionRefetch, getTransactionData } = props;
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState("");
 
   const categories =
     transactionType === "income"
       ? [
-          { label: "Salary", value: "Salary" },
-          { label: "Allowance", value: "Allowance" },
-          { label: "Bonus", value: "Bonus" },
-        ]
+        { label: "Salary", value: "Salary" },
+        { label: "Allowance", value: "Allowance" },
+        { label: "Bonus", value: "Bonus" },
+      ]
       : [
-          { label: "Food", value: "Food" },
-          { label: "Movie", value: "Movie" },
-          { label: "Subscription", value: "Subscription" },
-        ];
+        { label: "Food", value: "Food" },
+        { label: "Movie", value: "Movie" },
+        { label: "Subscription", value: "Subscription" },
+      ];
 
-  const [
-    addTransaction,
-    {
-      loading: transactionLoading,
-      error: transactionError,
-      data: transactionData,
-    },
-  ] = useMutation(ADD_TRANSACTION, {
+  const [addTransaction, { loading: addTransactionLoading, error: addTransactionError, data: addTransactionData }] = useMutation(ADD_TRANSACTION, {
     onCompleted(data) {
-      if (data.addTransaction.success === true) {
+      if (data?.addTransaction?.success === true) {
         // showSuccess(messages.cpeRebootSuccess);
-        getTransaction();
+      } else {
+        // showError(data?.rebootSystem);
+      }
+    },
+    onError(error) {
+      console.log(`error`);
+    },
+  });
+
+  const [updateTransaction, { loading: updateTransactionLoading, error: updateTransactionError, data: updateTransactionData }] = useMutation(UPDATE_TRANSACTION, {
+    onCompleted(data) {
+      if (data?.updateTransaction?.success === true) {
+        // showSuccess(messages.cpeRebootSuccess);
       } else {
         // showError(data?.rebootSystem);
       }
@@ -100,52 +102,61 @@ const UpsertTransaction = (props) => {
 
   return (
     <Formik
+      enableReinitialize={true}
       initialValues={{
-        date: dayjs(new Date()),
-        amount: "",
-        category: "",
-        description: "",
+        date: getTransactionData?.date ? dayjs(getTransactionData?.date) : dayjs(new Date()),
+        amount: getTransactionData?.amount ? getTransactionData?.amount : "",
+        category: getTransactionData?.category ? getTransactionData?.category : "",
+        description: getTransactionData?.description ? getTransactionData?.description : "",
       }}
       validate={(values) => {
         const errors = {};
 
-          if (!values.amount) {
-           errors.amount = 'Required';
-         }
-           if (!values.category) {
-           errors.category = 'Required';
-         }
+        if (!values.amount) {
+          errors.amount = 'Required';
+        }
+        if (!values.category) {
+          errors.category = 'Required';
+        }
 
-         if (!values.description) {
-           errors.description = 'Required';
-         }
-         
-         return errors;
+        if (!values.description) {
+          errors.description = 'Required';
+        }
+
+        return errors;
       }}
-      onSubmit={(values, { resetForm }) => {
-        addTransaction({
-          variables: {
-            ...values,
-            transactionType,
-          },
-        });
+      onSubmit={async (values, { resetForm }) => {
+        getTransactionData ?
+          await updateTransaction({ variables: { _id: getTransactionData?._id, ...values, transactionType } })
+          :
+          await addTransaction({ variables: { ...values, transactionType } });
         resetForm();
         setOpen(false);
+        getTransactionRefetch();
       }}
     >
       {({ submitForm, isSubmitting, values, setFieldValue }) => (
         <React.Fragment>
-          <Button
-            variant="contained"
-            className={
-              transactionType == "income" ? "buttonGreen" : "buttonRed"
-            }
-            sx={{ ...theme.glassCard, p: 2 }}
-            onClick={handleClickOpen}
-            fullWidth
-          >
-            {transactionType === "income" ? "Add Income" : "Add Expense"}
-          </Button>
+          {
+            getTransactionData ?
+              (<Tooltip title="Edit">
+                <IconButton>
+                  <EditOutlinedIcon onClick={handleClickOpen} />
+                </IconButton>
+              </Tooltip>)
+              :
+              (<Button
+                variant="contained"
+                className={
+                  transactionType == "income" ? "buttonGreen" : "buttonRed"
+                }
+                sx={{ ...theme.glassCard, p: 2 }}
+                onClick={handleClickOpen}
+                fullWidth
+              >
+                {transactionType === "income" ? "Add Income" : "Add Expense"}
+              </Button>
+              )}
           <BootstrapDialog
             onClose={handleClose}
             aria-labelledby="customized-dialog-title"
@@ -164,7 +175,7 @@ const UpsertTransaction = (props) => {
             }}
           >
             <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-              {transactionType === "income" ? "Add Income" : "Add Expense"}
+              {transactionType === "income" ? getTransactionData ? "Add Income" : "Add Expense" : getTransactionData ? "Edit Income" : "Edit Expense"}
             </DialogTitle>
             <IconButton
               aria-label="close"
@@ -189,6 +200,7 @@ const UpsertTransaction = (props) => {
                       views={["year", "month", "day"]}
                       sx={{ width: "100%" }}
                       onChange={(newValue) => setFieldValue("date", newValue)}
+                      format="DD-MM-YYYY"
                       slotProps={{
                         popper: {
                           sx: {
