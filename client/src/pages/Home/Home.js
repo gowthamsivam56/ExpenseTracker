@@ -23,6 +23,8 @@ import TableRow from "@mui/material/TableRow";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import dayjs from "dayjs";
+
 import "./Home.css";
 import UpsertTransaction from "./UpsertTransaction";
 import { ThemeToggleContext } from "../../theme/ThemeProviderWrapper";
@@ -96,6 +98,23 @@ const GET_TRANSACTION = gql`
   }
 `;
 
+const GET_TRANSACTION_BY_MONTH = gql`
+  query getTransactionByMonth ($startDate: String!, $endDate: String!) {
+    getTransactionByMonth (startDate: $startDate, endDate: $endDate) {
+      totalIncome
+      availableBalance
+      transactions {
+        _id
+        date
+        category
+        description
+        amount
+        transactionType
+      }
+    }
+  }
+`;
+
 const DELETE_TRANSACTION_BY_ID = gql`
   mutation deleteTransactionById ($_id: ID!) {
     deleteTransactionById (_id: $_id) {
@@ -122,8 +141,18 @@ const Home = () => {
   const { mode, toggleTheme } = useContext(ThemeToggleContext);
   const theme = useTheme();
 
-  const [getTransaction, { loading, data, refetch: getTransactionRefetch }] = useLazyQuery(
-    GET_TRANSACTION,
+  const [getTransaction, { loading, data, refetch: getTransactionRefetch }] = useLazyQuery(GET_TRANSACTION,
+    {
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "no-cache",
+      onCompleted(data) { },
+      onError(error) {
+        // showError(error);
+      },
+    }
+  );
+
+  const [getTransactionByMonth, { data: getTransactionByMonthData, refetch: getTransactionByMonthRefetch }] = useLazyQuery(GET_TRANSACTION_BY_MONTH,
     {
       notifyOnNetworkStatusChange: true,
       fetchPolicy: "no-cache",
@@ -138,7 +167,8 @@ const Home = () => {
     onCompleted(data) {
       if (data.deleteTransactionById.success === true) {
         // showSuccess(messages.cpeRebootSuccess);
-        getTransactionRefetch();
+        // getTransactionRefetch();
+        getTransactionByMonthRefetch();
       }
       else {
         // showError(data?.rebootSystem);
@@ -153,8 +183,20 @@ const Home = () => {
     await deleteTransactionById({ variables: { _id } });
   }
 
+  const handleMonthChange = async (newMonth) => {
+    const startDate = newMonth;
+    const endDate = newMonth.add(1, "month");
+    getTransactionByMonth({ variables: {startDate, endDate }})
+  }
+
   React.useEffect(() => {
     getTransaction();
+    const date = new Date();
+    const newMonth = dayjs(new Date(date.getFullYear(), date.getMonth(), 1));
+    const startDate = newMonth;
+    const endDate = newMonth.add(1, "month");
+    getTransactionByMonth({ variables: {startDate, endDate }})
+
   }, []);
 
   return (
@@ -203,12 +245,14 @@ const Home = () => {
           <UpsertTransaction
             transactionType={"income"}
             getTransactionRefetch={getTransactionRefetch}
+            getTransactionByMonthRefetch={getTransactionByMonthRefetch}
           />
         </Grid>
         <Grid size={{ xs: 6 }}>
           <UpsertTransaction
             transactionType={"expense"}
             getTransactionRefetch={getTransactionRefetch}
+            getTransactionByMonthRefetch={getTransactionByMonthRefetch}
           />
         </Grid>
         <Grid size={{ xs: 6 }}>
@@ -216,6 +260,7 @@ const Home = () => {
             <DateCalendar
               sx={{ ...theme.glassCard, width: "100%" }}
               views={["year", "month", "day"]}
+              onMonthChange={handleMonthChange}
             />
           </LocalizationProvider>
         </Grid>
@@ -225,7 +270,7 @@ const Home = () => {
               <CardContent sx={{ height: "158px" }}>
                 <Typography variant="h5">Total Income</Typography>
                 <Typography variant="h3" color="text.secondary">
-                  30000
+                  {getTransactionByMonthData?.getTransactionByMonth?.totalIncome}
                 </Typography>
               </CardContent>
             </CardActionArea>
@@ -235,7 +280,7 @@ const Home = () => {
               <CardContent sx={{ height: "158px" }}>
                 <Typography variant="h5">Available Balance</Typography>
                 <Typography variant="h3" color="text.secondary">
-                  500
+                  {getTransactionByMonthData?.getTransactionByMonth?.availableBalance}
                 </Typography>
               </CardContent>
             </CardActionArea>
@@ -262,9 +307,10 @@ const Home = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data?.getTransaction?.map((data) => (
+                {/* {data?.getTransaction?.map((data) => ( */}
+                {getTransactionByMonthData?.getTransactionByMonth?.transactions?.map((data) => (
                   <TableRow>
-                    <TableCell>{`${new Date(data?.date).getDate()}-${new Date(data?.date).getMonth() + 1}-${new Date(data?.date).getFullYear()}`}</TableCell>
+                    <TableCell>{new Date(Number(data?.date)).toLocaleString()}</TableCell>
                     <TableCell>{data?.category}</TableCell>
                     <TableCell>{data?.description}</TableCell>
                     <TableCell align="right">
@@ -278,7 +324,7 @@ const Home = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <UpsertTransaction transactionType={data?.transactionType} getTransactionRefetch={getTransactionRefetch} getTransactionData={data} />
+                      <UpsertTransaction transactionType={data?.transactionType} getTransactionRefetch={getTransactionRefetch} getTransactionByMonthRefetch={getTransactionByMonthRefetch} getTransactionData={data} />
                       <Tooltip title="Delete">
                         <IconButton>
                           <DeleteOutlineOutlinedIcon onClick={() => handleDelete(data?._id)} />

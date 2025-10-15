@@ -50,7 +50,7 @@ const UPDATE_TRANSACTION = gql`
 
 const UpsertTransaction = (props) => {
   const theme = useTheme();
-  const { transactionType, getTransactionRefetch, getTransactionData } = props;
+  const { transactionType, getTransactionRefetch, getTransactionByMonthRefetch, getTransactionData } = props;
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState("");
 
@@ -104,7 +104,7 @@ const UpsertTransaction = (props) => {
     <Formik
       enableReinitialize={true}
       initialValues={{
-        date: getTransactionData?.date ? dayjs(getTransactionData?.date) : dayjs(new Date()),
+        date: getTransactionData?.date ? dayjs(Number(getTransactionData?.date)) : dayjs(new Date()),
         amount: getTransactionData?.amount ? getTransactionData?.amount : "",
         category: getTransactionData?.category ? getTransactionData?.category : "",
         description: getTransactionData?.description ? getTransactionData?.description : "",
@@ -132,7 +132,8 @@ const UpsertTransaction = (props) => {
           await addTransaction({ variables: { ...values, transactionType } });
         resetForm();
         setOpen(false);
-        getTransactionRefetch();
+        // getTransactionRefetch();
+        getTransactionByMonthRefetch();
       }}
     >
       {({ submitForm, isSubmitting, values, setFieldValue }) => (
