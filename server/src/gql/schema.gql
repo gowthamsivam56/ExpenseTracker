@@ -10,7 +10,7 @@ type Response implements MutationResponse {
   message: String
 }
 
-type transactionInfo {
+type TransactionInfo {
   _id: ID!
   date: String
   category: String
@@ -19,8 +19,15 @@ type transactionInfo {
   transactionType: String
 }
 
+type MonthlyTotal {
+  totalIncome: String!
+  availableBalance: String!
+  transactions: [TransactionInfo]!
+}
+
 type Query {
-  getTransaction: [transactionInfo]
+  getTransaction: [TransactionInfo]
+  getTransactionByMonth(startDate: String!, endDate: String!): MonthlyTotal
 }
 
 type Mutation {

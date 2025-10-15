@@ -26,7 +26,10 @@ export async function gettransaction(dbName: string) {
 export async function addtransaction(dbName: string, args: any) {
     if (!dbName) throw new Error('Database client is not initialized.');
     try {
-        return await client.db(dbName).collection("transaction").insertOne(args);
+        return await client.db(dbName).collection("transaction").insertOne({
+            ...args,
+            date: new Date(args?.date),
+        });
     } catch (e: any) {
         throw new Error(`Failed to add transaction in database: ${e.message}`);
     }
@@ -37,7 +40,7 @@ export async function updatetransaction(dbName: string, _id: string, update: any
     try {
         return await client.db(dbName).collection("transaction").updateOne(
             { _id: new ObjectId(_id) },
-            { $set: update }
+            { $set: { ...update, date: new Date(update?.date) } }
         );
     } catch (e: any) {
         throw new Error(`Failed to update transaction in database: ${e.message}`);
@@ -50,5 +53,14 @@ export async function deletetransactionById(dbName: string, _id: string) {
         return await client.db(dbName).collection("transaction").deleteOne({ _id: new ObjectId(_id) });
     } catch (e: any) {
         throw new Error(`Failed to delete transaction by id from the database: ${e.message}`);
+    }
+};
+
+export async function gettransactionByMonth(dbName: string, args: any) {
+    if (!dbName) throw new Error('Database client is not initialized.');
+    try {
+        return await client.db(dbName).collection("transaction").find({date: {$gte: new Date(args?.startDate), $lt: new Date(args?.endDate)} }).toArray();
+    } catch (e: any) {
+        throw new Error(`Failed to get transaction by month from database: ${e.message}`);
     }
 };
