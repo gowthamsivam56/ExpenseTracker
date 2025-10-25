@@ -301,7 +301,7 @@ const Home = () => {
             </Grid>
           </Stack>
         </Grid>
-        <Grid size={{ xs: 4 }} sx={{ ...theme.glassCard, alignContent: "center"}}>
+        <Grid size={{ xs: 4 }} sx={{ ...theme.glassCard, alignContent: "center" }}>
           <PieChart
             series={[
               {
@@ -316,10 +316,20 @@ const Home = () => {
             height={200}
           />
         </Grid>
-        <Grid size={{ xs: 4 }}>
+        <Grid size={{ xs: 4 }} sx={{
+          ...theme.glassCard,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar
-              sx={{ ...theme.glassCard, width: "100%"}}
+              sx={{
+                width: "100%",
+                "& .MuiPickersDay-root": { height: 37, width: 40, fontSize: "1.40rem" },
+                "& .MuiTypography-root": { height: 37, width: 40, fontSize: "1.50rem" },
+                "& .MuiPickersCalendarHeader-label": { fontSize: "1.5rem" },
+              }}
               views={["year", "month", "day"]}
               onMonthChange={handleMonthChange}
             />
