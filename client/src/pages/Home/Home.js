@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { gql, useMutation, useLazyQuery } from "@apollo/client";
-import { Container, Grid } from "@mui/material";
+import { Box, Container, Grid } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
@@ -24,6 +24,8 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import dayjs from "dayjs";
+import Stack from '@mui/material/Stack';
+import { PieChart } from '@mui/x-charts/PieChart';
 
 import "./Home.css";
 import UpsertTransaction from "./UpsertTransaction";
@@ -186,7 +188,7 @@ const Home = () => {
   const handleMonthChange = async (newMonth) => {
     const startDate = newMonth;
     const endDate = newMonth.add(1, "month");
-    getTransactionByMonth({ variables: {startDate, endDate }})
+    getTransactionByMonth({ variables: { startDate, endDate } })
   }
 
   React.useEffect(() => {
@@ -195,14 +197,14 @@ const Home = () => {
     const newMonth = dayjs(new Date(date.getFullYear(), date.getMonth(), 1));
     const startDate = newMonth;
     const endDate = newMonth.add(1, "month");
-    getTransactionByMonth({ variables: {startDate, endDate }})
+    getTransactionByMonth({ variables: { startDate, endDate } })
 
   }, []);
 
   return (
     <Container
-      maxWidth="md"
-      sx={{ ...theme.glassCard, padding: '20px', marginY: '50px', marginX: 'auto' }}
+      maxWidth="xl"
+      sx={{ ...theme.glassCard, padding: '20px', marginY: '30px', marginX: 'auto' }}
     >
       <Grid container spacing={2}>
         <Grid size={{ xs: 1 }} sx={{ alignContent: "center" }}>
@@ -224,7 +226,7 @@ const Home = () => {
           size={{ xs: 10 }}
           sx={{ display: "flex", justifyContent: "center" }}
         >
-          <Typography variant="h2" color="#7C7C7C">
+          <Typography variant="h3" color="#7C7C7C">
             Expense Tracker
           </Typography>
         </Grid>
@@ -241,52 +243,89 @@ const Home = () => {
           <Divider sx={{ ...theme.glassCard }} />
         </Grid>
 
-        <Grid size={{ xs: 6 }}>
-          <UpsertTransaction
-            transactionType={"income"}
-            getTransactionRefetch={getTransactionRefetch}
-            getTransactionByMonthRefetch={getTransactionByMonthRefetch}
+        <Grid size={{ xs: 8 }}>
+          <Stack spacing={2}>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 6 }}>
+                <UpsertTransaction
+                  transactionType={"income"}
+                  getTransactionRefetch={getTransactionRefetch}
+                  getTransactionByMonthRefetch={getTransactionByMonthRefetch}
+                />
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <UpsertTransaction
+                  transactionType={"expense"}
+                  getTransactionRefetch={getTransactionRefetch}
+                  getTransactionByMonthRefetch={getTransactionByMonthRefetch}
+                />
+              </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 4 }}>
+                <Card sx={{ ...theme.glassCard }}>
+                  <CardActionArea>
+                    <CardContent sx={{ height: "158px" }}>
+                      <Typography variant="h5">Total Income</Typography>
+                      <Typography variant="h3" color="text.secondary">
+                        {getTransactionByMonthData?.getTransactionByMonth?.totalIncome}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+              <Grid size={{ xs: 4 }}>
+                <Card sx={{ ...theme.glassCard }}>
+                  <CardActionArea>
+                    <CardContent sx={{ height: "158px" }}>
+                      <Typography variant="h5">Total Expense</Typography>
+                      <Typography variant="h3" color="text.secondary">
+                        {getTransactionByMonthData?.getTransactionByMonth?.availableBalance}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+              <Grid size={{ xs: 4 }}>
+                <Card sx={{ ...theme.glassCard }}>
+                  <CardActionArea>
+                    <CardContent sx={{ height: "158px" }}>
+                      <Typography variant="h5">Available Balance</Typography>
+                      <Typography variant="h3" color="text.secondary">
+                        {getTransactionByMonthData?.getTransactionByMonth?.availableBalance}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            </Grid>
+          </Stack>
+        </Grid>
+        <Grid size={{ xs: 4 }} sx={{ ...theme.glassCard, alignContent: "center"}}>
+          <PieChart
+            series={[
+              {
+                data: [
+                  { id: 0, value: 10, label: 'series A' },
+                  { id: 1, value: 15, label: 'series B' },
+                  { id: 2, value: 20, label: 'series C' },
+                ],
+              },
+            ]}
+            width={200}
+            height={200}
           />
         </Grid>
-        <Grid size={{ xs: 6 }}>
-          <UpsertTransaction
-            transactionType={"expense"}
-            getTransactionRefetch={getTransactionRefetch}
-            getTransactionByMonthRefetch={getTransactionByMonthRefetch}
-          />
-        </Grid>
-        <Grid size={{ xs: 6 }}>
+        <Grid size={{ xs: 4 }}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar
-              sx={{ ...theme.glassCard, width: "100%" }}
+              sx={{ ...theme.glassCard, width: "100%"}}
               views={["year", "month", "day"]}
               onMonthChange={handleMonthChange}
             />
           </LocalizationProvider>
         </Grid>
-        <Grid container size={{ xs: 6 }} direction="column" spacing={2}>
-          <Card sx={{ ...theme.glassCard }}>
-            <CardActionArea>
-              <CardContent sx={{ height: "158px" }}>
-                <Typography variant="h5">Total Income</Typography>
-                <Typography variant="h3" color="text.secondary">
-                  {getTransactionByMonthData?.getTransactionByMonth?.totalIncome}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-          <Card sx={{ ...theme.glassCard }}>
-            <CardActionArea>
-              <CardContent sx={{ height: "158px" }}>
-                <Typography variant="h5">Available Balance</Typography>
-                <Typography variant="h3" color="text.secondary">
-                  {getTransactionByMonthData?.getTransactionByMonth?.availableBalance}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-        <Grid size={{ xs: 12 }}>
+        <Grid size={{ xs: 8 }}>
           <TableContainer sx={{ ...theme.glassCard, height: "435px" }} component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
