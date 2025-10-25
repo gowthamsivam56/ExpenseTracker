@@ -104,6 +104,7 @@ const GET_TRANSACTION_BY_MONTH = gql`
   query getTransactionByMonth ($startDate: String!, $endDate: String!) {
     getTransactionByMonth (startDate: $startDate, endDate: $endDate) {
       totalIncome
+      totalExpense
       availableBalance
       transactions {
         _id
@@ -280,7 +281,7 @@ const Home = () => {
                     <CardContent sx={{ height: "158px" }}>
                       <Typography variant="h5">Total Expense</Typography>
                       <Typography variant="h3" color="text.secondary">
-                        {getTransactionByMonthData?.getTransactionByMonth?.availableBalance}
+                        {getTransactionByMonthData?.getTransactionByMonth?.totalExpense}
                       </Typography>
                     </CardContent>
                   </CardActionArea>
