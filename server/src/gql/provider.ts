@@ -92,9 +92,11 @@ export async function getTransactionByMonth(args: any) {
         const dbName = "expense_tracker";
         const transactions = await gettransactionByMonth(dbName, args);
         const totalIncome = transactions.filter((f) => f?.transactionType === 'income').reduce((total, data) => Number(data?.amount)+total, 0);
-        const availableBalance = totalIncome - transactions.filter((f) => f?.transactionType === 'expense').reduce((total, data) => Number(data?.amount)+total, 0);
+        const totalExpense = transactions.filter((f) => f?.transactionType === 'expense').reduce((total, data) => Number(data?.amount)+total, 0);
+        const availableBalance = totalIncome - totalExpense;
         return {
             totalIncome,
+            totalExpense,
             availableBalance,
             transactions,
         };

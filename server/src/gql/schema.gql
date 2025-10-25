@@ -21,6 +21,7 @@ type TransactionInfo {
 
 type MonthlyTotal {
   totalIncome: String!
+  totalExpense: String!
   availableBalance: String!
   transactions: [TransactionInfo]!
 }
