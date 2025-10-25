@@ -326,9 +326,9 @@ const Home = () => {
             <DateCalendar
               sx={{
                 width: "100%",
-                "& .MuiPickersDay-root": { height: 37, width: 40, fontSize: "1.40rem" },
-                "& .MuiTypography-root": { height: 37, width: 40, fontSize: "1.50rem" },
-                "& .MuiPickersCalendarHeader-label": { fontSize: "1.5rem" },
+                "& .MuiPickersDay-root": { height: 37, width: 40, fontSize: "1.40rem", marginX: "8px", marginY: "0.3px" },
+                "& .MuiTypography-root": { height: 37, width: 40, fontSize: "1.50rem", marginX: "8px", marginY: "8px" },
+                "& .MuiPickersCalendarHeader-label": { fontSize: "1.6rem" },
               }}
               views={["year", "month", "day"]}
               onMonthChange={handleMonthChange}
