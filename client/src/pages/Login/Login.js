@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 import Link from '@mui/material/Link';
 import { Box } from '@mui/material';
 import { gql, useMutation } from "@apollo/client";
+import { useNavigate } from 'react-router-dom';
 
 const LOGIN = gql`
   mutation logIn($email: String!, $password: String!) {
@@ -26,11 +27,13 @@ const LOGIN = gql`
 
 const Login = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
 
     const [logIn, { loading: logInLoading, error: logInError, data: logInData }] = useMutation(LOGIN, {
         onCompleted(data) {
             if (data?.logIn?.success === true) {
                 localStorage.setItem("dbName", data?.logIn?.user?.dbName);
+                navigate('/home');
                 // showSuccess(messages.cpeRebootSuccess);
             } else {
                 // showError(data?.rebootSystem);
