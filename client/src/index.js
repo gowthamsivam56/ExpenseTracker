@@ -3,12 +3,20 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
+
+const dbName = localStorage.getItem("dbName") || "";
 
 const client = new ApolloClient({
-  uri: "http://localhost:4000/graphql",
+  link: new HttpLink({
+    uri: "http://localhost:4000/graphql",
+    headers: {
+      dbName: dbName || '',
+    },
+  }),
   cache: new InMemoryCache()
 })
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

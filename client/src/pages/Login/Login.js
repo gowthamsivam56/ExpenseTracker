@@ -7,9 +7,40 @@ import { TextField } from "formik-mui";
 import Button from "@mui/material/Button";
 import Link from '@mui/material/Link';
 import { Box } from '@mui/material';
+import { gql, useMutation } from "@apollo/client";
+
+const LOGIN = gql`
+  mutation logIn($email: String!, $password: String!) {
+    logIn(email: $email, password: $password) {
+      code
+      success
+      message
+      user{
+        fullname
+        email
+        dbName
+      }
+    }
+  }
+`;
 
 const Login = () => {
     const theme = useTheme();
+
+    const [logIn, { loading: logInLoading, error: logInError, data: logInData }] = useMutation(LOGIN, {
+        onCompleted(data) {
+            if (data?.logIn?.success === true) {
+                localStorage.setItem("dbName", data?.logIn?.user?.dbName);
+                // showSuccess(messages.cpeRebootSuccess);
+            } else {
+                // showError(data?.rebootSystem);
+            }
+        },
+        onError(error) {
+            console.log(`error`);
+        },
+    });
+
     return (
         <Box sx={{
             display: "flex",
@@ -25,6 +56,9 @@ const Login = () => {
                     initialValues={{
                         email: '',
                         password: ''
+                    }}
+                    onSubmit={async (values) => {
+                        await logIn({ variables: { ...values } });
                     }}
                 >
                     <Form>
@@ -64,9 +98,9 @@ const Login = () => {
                                 </Link>
                             </Grid>
                             <Grid size={{ xs: 12 }}>
-                                <Button type="submit" sx={{
-                                    ...theme.glassCard
-                                }} fullWidth>Log In</Button>
+                                <Button type="submit" sx={{ ...theme.glassCard }} fullWidth>
+                                    Log In
+                                </Button>
                             </Grid>
                             <Grid size={{ xs: 12 }} sx={{
                                 display: "flex",
