@@ -7,7 +7,7 @@ export async function signUp(args: any) {
         const dbName = `user_${args.email.replace(/[@.]/g, "_")}`;
         const existingUser = await checkUser(args?.email);
         if (existingUser) {
-        throw new Error("User already exists with this email");
+            throw new Error("User already exists with this email");
         }
         const data = await signup(dbName, args);
         await createUserDB(dbName);
@@ -29,6 +29,32 @@ export async function signUp(args: any) {
         throw e.message;
     }
 
+}
+
+export async function logIn(args: any) {
+    try {
+        const user = await checkUser(args?.email);
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        if (user.password != args.password) {
+            throw new Error("Invalid password");
+        }
+
+        return {
+            code: "I_LOGIN_SUCCESS",
+            success: true,
+            message: "User login successfully",
+            user: {
+                fullname: user.fullname,
+                email: user.email,
+                dbName: user.dbName
+            }
+        };
+    } catch (e: any) {
+        throw e.message;
+    }
 }
 
 export async function getTransaction() {
@@ -121,8 +147,8 @@ export async function getTransactionByMonth(args: any) {
         console.log(`getTransactionByMonth called....`);
         const dbName = "expense_tracker";
         const transactions = await gettransactionByMonth(dbName, args);
-        const totalIncome = transactions.filter((f) => f?.transactionType === 'income').reduce((total, data) => Number(data?.amount)+total, 0);
-        const totalExpense = transactions.filter((f) => f?.transactionType === 'expense').reduce((total, data) => Number(data?.amount)+total, 0);
+        const totalIncome = transactions.filter((f) => f?.transactionType === 'income').reduce((total, data) => Number(data?.amount) + total, 0);
+        const totalExpense = transactions.filter((f) => f?.transactionType === 'expense').reduce((total, data) => Number(data?.amount) + total, 0);
         const availableBalance = totalIncome - totalExpense;
         return {
             totalIncome,

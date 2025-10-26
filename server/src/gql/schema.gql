@@ -10,6 +10,19 @@ type Response implements MutationResponse {
   message: String
 }
 
+type User {
+  fullname: String
+  email: String
+  dbName: String
+}
+
+type LoginResponse implements MutationResponse {
+  code: String
+  success: Boolean!
+  message: String
+  user: User
+}
+
 type TransactionInfo {
   _id: ID!
   date: String
@@ -33,6 +46,7 @@ type Query {
 
 type Mutation {
   signUp(fullname: String!, email: String!, password: String!): Response!
+  logIn(email: String!, password: String!): LoginResponse!
   addTransaction(date: String!, category: String!, description: String!, amount: String!, transactionType: String!): Response!
   updateTransaction(_id: ID!, date: String!, category: String!, description: String!, amount: String!, transactionType: String!): Response!
   deleteTransactionById(_id: ID!): Response!
