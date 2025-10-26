@@ -1,5 +1,35 @@
-import { addtransaction, updatetransaction, deletetransactionById, gettransaction, gettransactionByMonth } from "../clients/mongo";
+import { checkUser, signup, createUserDB, addtransaction, updatetransaction, deletetransactionById, gettransaction, gettransactionByMonth } from "../clients/mongo";
 import { GraphQLError } from "graphql";
+
+
+export async function signUp(args: any) {
+    try {
+        const dbName = `user_${args.email.replace(/[@.]/g, "_")}`;
+        const existingUser = await checkUser(args?.email);
+        if (existingUser) {
+        throw new Error("User already exists with this email");
+        }
+        const data = await signup(dbName, args);
+        await createUserDB(dbName);
+        console.log(`data`, data);
+        if (data) {
+            return {
+                code: "I_SIGNUP_SUCCESS",
+                success: true,
+                message: "User signed up successfully",
+            };
+        } else {
+            return {
+                code: "I_SIGNUP_FAILED",
+                success: false,
+                message: "Failed to signed up the user",
+            };
+        }
+    } catch (e: any) {
+        throw e.message;
+    }
+
+}
 
 export async function getTransaction() {
     try {

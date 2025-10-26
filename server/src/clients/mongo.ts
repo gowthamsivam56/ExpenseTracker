@@ -14,6 +14,34 @@ export async function connectDB() {
     }
 }
 
+export async function checkUser( email: string) {
+    try {
+        return await client.db("expense_tracker").collection("users").findOne({ email});
+    } catch (e: any) {
+        throw new Error(`Failed to check user in database: ${e.message}`);
+    }
+};
+
+export async function signup(dbName: string, args: any) {
+    try {
+        return await client.db("expense_tracker").collection("users").insertOne({
+            ...args,
+            dbName
+        });
+    } catch (e: any) {
+        throw new Error(`Failed to add user in database: ${e.message}`);
+    }
+};
+
+export async function createUserDB(dbName: string) {
+    if (!dbName) throw new Error('Database client is not initialized.');
+    try {
+        return await client.db(dbName).createCollection("transaction");
+    } catch (e: any) {
+        throw new Error(`Failed to create user database: ${e.message}`);
+    }
+};
+
 export async function gettransaction(dbName: string) {
     if (!dbName) throw new Error('Database client is not initialized.');
     try {

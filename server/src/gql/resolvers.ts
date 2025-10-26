@@ -1,4 +1,4 @@
-import { addTransaction, updateTransaction, deleteTransactionById, getTransaction, getTransactionByMonth } from "./provider";
+import { signUp, addTransaction, updateTransaction, deleteTransactionById, getTransaction, getTransactionByMonth } from "./provider";
 
 export const resolvers = {
     Query: {
@@ -6,6 +6,7 @@ export const resolvers = {
         getTransactionByMonth: (root: any, args: any) => getTransactionByMonth(args),
     },
     Mutation: {
+        signUp: (root: any, args: any) => signUp(args),
         addTransaction: (root: any, args: any) => addTransaction(args),
         updateTransaction: (root: any, args: any) => updateTransaction(args),
         deleteTransactionById: (root: any, args: any) => deleteTransactionById(args),
