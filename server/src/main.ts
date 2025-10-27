@@ -27,19 +27,26 @@ const startServer = async () => {
     const app = express();
     await connectDB();
 
-    const server = new ApolloServer ({
+    const server = new ApolloServer({
         typeDefs,
         resolvers,
     });
 
     await server.start();
-    
+
     app.use(
         '/graphql',
         cors(),
         // bodyParser.json(),
         express.json(),
-        expressMiddleware(server)
+        expressMiddleware(server, {
+            context: async ({ req }) => {
+                const info = {
+                    dbName: req.headers['dbname'] || '',
+                };
+                return { info };
+            },
+        })
     );
 
     app.listen(4000, () => {

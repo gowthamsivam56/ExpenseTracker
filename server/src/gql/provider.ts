@@ -57,10 +57,9 @@ export async function logIn(args: any) {
     }
 }
 
-export async function getTransaction() {
+export async function getTransaction(dbName: string) {
     try {
         console.log(`getTransaction called....`);
-        const dbName = "expense_tracker";
         return await gettransaction(dbName);
     } catch (e: any) {
         throw new GraphQLError(e.message, {
@@ -71,10 +70,9 @@ export async function getTransaction() {
     }
 }
 
-export async function addTransaction(args: any) {
+export async function addTransaction(args: any, dbName: string) {
     try {
         const { date, Category, Description, Amount } = args;
-        const dbName = "expense_tracker";
         const data = await addtransaction(dbName, args);
         console.log(`data`, data);
         if (data) {
@@ -95,10 +93,9 @@ export async function addTransaction(args: any) {
     }
 }
 
-export async function updateTransaction(args: any) {
+export async function updateTransaction(args: any, dbName: string) {
     try {
         const { _id, ...update } = args;
-        const dbName = "expense_tracker";
         const data = await updatetransaction(dbName, _id, update);
         console.log(`data`, data);
         if (data) {
@@ -119,9 +116,8 @@ export async function updateTransaction(args: any) {
     }
 }
 
-export async function deleteTransactionById({ _id }: any) {
+export async function deleteTransactionById({ _id }: any, dbName: string) {
     try {
-        const dbName = "expense_tracker";
         const data = await deletetransactionById(dbName, _id);
         if (data) {
             return {
@@ -142,10 +138,9 @@ export async function deleteTransactionById({ _id }: any) {
 }
 
 
-export async function getTransactionByMonth(args: any) {
+export async function getTransactionByMonth(args: any, dbName: string) {
     try {
         console.log(`getTransactionByMonth called....`);
-        const dbName = "expense_tracker";
         const transactions = await gettransactionByMonth(dbName, args);
         const totalIncome = transactions.filter((f) => f?.transactionType === 'income').reduce((total, data) => Number(data?.amount) + total, 0);
         const totalExpense = transactions.filter((f) => f?.transactionType === 'expense').reduce((total, data) => Number(data?.amount) + total, 0);

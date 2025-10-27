@@ -2,14 +2,14 @@ import { signUp, logIn, addTransaction, updateTransaction, deleteTransactionById
 
 export const resolvers = {
     Query: {
-        getTransaction: () => getTransaction(),
-        getTransactionByMonth: (root: any, args: any) => getTransactionByMonth(args),
+        getTransaction: (root: any, args: any, { info: { dbName } }: any) => getTransaction(dbName),
+        getTransactionByMonth: (root: any, args: any, { info: { dbName } }: any) => getTransactionByMonth(args, dbName),
     },
     Mutation: {
         signUp: (root: any, args: any) => signUp(args),
         logIn: (root: any, args: any) => logIn(args),
-        addTransaction: (root: any, args: any) => addTransaction(args),
-        updateTransaction: (root: any, args: any) => updateTransaction(args),
-        deleteTransactionById: (root: any, args: any) => deleteTransactionById(args),
+        addTransaction: (root: any, args: any, { info: { dbName } }: any) => addTransaction(args, dbName),
+        updateTransaction: (root: any, args: any, { info: { dbName } }: any) => updateTransaction(args, dbName),
+        deleteTransactionById: (root: any, args: any, { info: { dbName } }: any) => deleteTransactionById(args, dbName),
     }
 }
