@@ -11,7 +11,7 @@ const client = new ApolloClient({
   link: new HttpLink({
     uri: "http://localhost:4000/graphql",
     headers: {
-      dbName: dbName || '',
+      dbname: dbName || '',
     },
   }),
   cache: new InMemoryCache()

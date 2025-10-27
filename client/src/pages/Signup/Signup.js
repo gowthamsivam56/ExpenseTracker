@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 import Link from '@mui/material/Link';
 import { Box } from '@mui/material';
 import { gql, useMutation } from "@apollo/client";
+import { useNavigate } from 'react-router-dom';
 
 const SIGNUP = gql`
   mutation signUp($fullname: String!, $email: String!, $password: String!) {
@@ -21,10 +22,12 @@ const SIGNUP = gql`
 
 const Signup = () => {
     const theme = useTheme();
+    const navigate = useNavigate();
 
     const [signUp, { loading: signupLoading, error: signupError, data: signupData }] = useMutation(SIGNUP, {
         onCompleted(data) {
             if (data?.signUp?.success === true) {
+                navigate('/');
                 // showSuccess(messages.cpeRebootSuccess);
             } else {
                 // showError(data?.rebootSystem);
