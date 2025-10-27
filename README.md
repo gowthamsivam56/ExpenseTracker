@@ -50,3 +50,7 @@ npm install graphql @apollo/client
 npm install @mui/material @emotion/react @emotion/styled
 npm install @mui/icons-material
 npm install @mui/system     // optional
+npm install formik
+npm install formik-mui
+npm install @mui/x-charts
+npm install react-router-dom
