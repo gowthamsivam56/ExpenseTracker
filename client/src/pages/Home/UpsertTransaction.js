@@ -70,9 +70,6 @@ const UpsertTransaction = (props) => {
   const [addTransaction, { loading: addTransactionLoading, error: addTransactionError, data: addTransactionData }] = useMutation(ADD_TRANSACTION, {
     onCompleted(data) {
       if (data?.addTransaction?.success === true) {
-        // showSuccess(messages.cpeRebootSuccess);
-      } else {
-        // showError(data?.rebootSystem);
       }
     },
     onError(error) {
@@ -83,9 +80,6 @@ const UpsertTransaction = (props) => {
   const [updateTransaction, { loading: updateTransactionLoading, error: updateTransactionError, data: updateTransactionData }] = useMutation(UPDATE_TRANSACTION, {
     onCompleted(data) {
       if (data?.updateTransaction?.success === true) {
-        // showSuccess(messages.cpeRebootSuccess);
-      } else {
-        // showError(data?.rebootSystem);
       }
     },
     onError(error) {

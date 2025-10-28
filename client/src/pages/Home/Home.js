@@ -3,7 +3,11 @@ import { gql, useMutation, useLazyQuery } from "@apollo/client";
 import { Box, Container, Grid } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Logout from '@mui/icons-material/Logout';
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Divider from "@mui/material/Divider";
@@ -26,6 +30,7 @@ import Switch from "@mui/material/Switch";
 import dayjs from "dayjs";
 import Stack from '@mui/material/Stack';
 import { PieChart } from '@mui/x-charts/PieChart';
+import { useNavigate } from 'react-router-dom';
 
 import "./Home.css";
 import UpsertTransaction from "./UpsertTransaction";
@@ -128,29 +133,37 @@ const DELETE_TRANSACTION_BY_ID = gql`
   }
 `;
 
-function createData(date, category, description, amount) {
-  return { date, category, description, amount };
-}
-
-const rows = [
-  createData("2025-10-01", "Food", "Lunch at Subway", 12.5),
-  createData("2025-10-02", "Transport", "Uber to office", 8.75),
-  createData("2025-10-03", "Shopping", "New headphones", 49.99),
-  createData("2025-10-04", "Utilities", "Electricity bill", 64.0),
-  createData("2025-10-05", "Entertainment", "Netflix subscription", 15.99),
-];
-
 const Home = () => {
   const { mode, toggleTheme } = useContext(ThemeToggleContext);
   const theme = useTheme();
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const name = localStorage.getItem("name") || "";
+  const displayName = name.charAt(0).toUpperCase();
+  const email = localStorage.getItem("email") || "";
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    setAnchorEl(null);
+    localStorage.clear();
+    navigate('/');
+  }
+  
   const [getTransaction, { loading, data, refetch: getTransactionRefetch }] = useLazyQuery(GET_TRANSACTION,
     {
       notifyOnNetworkStatusChange: true,
       fetchPolicy: "no-cache",
       onCompleted(data) { },
       onError(error) {
-        // showError(error);
+        console.log(`error`);
       },
     }
   );
@@ -161,7 +174,7 @@ const Home = () => {
       fetchPolicy: "no-cache",
       onCompleted(data) { },
       onError(error) {
-        // showError(error);
+       console.log(`error`);
       },
     }
   );
@@ -169,12 +182,8 @@ const Home = () => {
   const [deleteTransactionById, { loading: deleteTransactionByIdLoading, error: deleteTransactionByIdError, data: deleteTransactionByIdData }] = useMutation(DELETE_TRANSACTION_BY_ID, {
     onCompleted(data) {
       if (data.deleteTransactionById.success === true) {
-        // showSuccess(messages.cpeRebootSuccess);
         // getTransactionRefetch();
         getTransactionByMonthRefetch();
-      }
-      else {
-        // showError(data?.rebootSystem);
       }
     },
     onError(error) {
@@ -233,12 +242,48 @@ const Home = () => {
         </Grid>
         <Grid size={{ xs: 1 }} sx={{ alignContent: "center" }}>
           <Tooltip title="My Account">
-            <IconButton>
-              <AccountCircleOutlinedIcon
-                sx={{ fontSize: 40, color: "#7C7C7C" }}
-              />
+            <IconButton onClick={handleClick}>
+              <Avatar sx={{ width: 45, height: 45 }}>{displayName}</Avatar>
             </IconButton>
           </Tooltip>
+          <Menu
+            anchorEl={anchorEl}
+            id="account-menu"
+            open={open}
+            onClose={handleClose}
+            onClick={handleClose}
+            slotProps={{
+              paper: {
+                elevation: 0,
+                sx: {
+                  overflow: 'visible',
+                  ...theme.glassCard,
+                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                  mt: 1.5,
+                },
+              },
+            }}
+            anchorOrigin={{ horizontal: 'right' }}
+          >
+            <MenuItem disabled sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+            }}>
+              <Typography variant="body2" fontSize="20px" fontWeight="600">
+                {name.charAt(0).toUpperCase() + name.slice(1)}
+              </Typography>
+              <Typography variant="caption" color="textSecondary">
+                {email}
+              </Typography>
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>
+              <ListItemIcon>
+                <Logout fontSize="small" />
+              </ListItemIcon>
+              Logout
+            </MenuItem>
+          </Menu>
         </Grid>
         <Grid size={{ xs: 12 }}>
           <Divider sx={{ ...theme.glassCard }} />

@@ -28,9 +28,6 @@ const Signup = () => {
         onCompleted(data) {
             if (data?.signUp?.success === true) {
                 navigate('/');
-                // showSuccess(messages.cpeRebootSuccess);
-            } else {
-                // showError(data?.rebootSystem);
             }
         },
         onError(error) {

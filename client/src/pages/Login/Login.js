@@ -33,10 +33,9 @@ const Login = () => {
         onCompleted(data) {
             if (data?.logIn?.success === true) {
                 localStorage.setItem("dbName", data?.logIn?.user?.dbName);
+                localStorage.setItem("name", data?.logIn?.user?.fullname);
+                localStorage.setItem("email", data?.logIn?.user?.email);
                 navigate('/home');
-                // showSuccess(messages.cpeRebootSuccess);
-            } else {
-                // showError(data?.rebootSystem);
             }
         },
         onError(error) {
