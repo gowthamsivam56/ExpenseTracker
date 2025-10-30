@@ -142,6 +142,20 @@ const Home = () => {
   const name = localStorage.getItem("name") || "";
   const displayName = name.charAt(0).toUpperCase();
   const email = localStorage.getItem("email") || "";
+  const [transactions, setTransactions] = React.useState([])
+
+  const grouped = transactions?.reduce((acc, t) => {
+    const category = t.category;
+    const amount = Number(t.amount);
+    acc[category] = (acc[category] || 0) + amount;
+    return acc;
+  }, {});
+
+  const chartData = Object.entries(grouped || {})?.map(([category, total], index) => ({
+    id: index,
+    value: total,
+    label: category,
+  }));
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -156,7 +170,7 @@ const Home = () => {
     localStorage.clear();
     navigate('/');
   }
-  
+
   const [getTransaction, { loading, data, refetch: getTransactionRefetch }] = useLazyQuery(GET_TRANSACTION,
     {
       notifyOnNetworkStatusChange: true,
@@ -172,9 +186,11 @@ const Home = () => {
     {
       notifyOnNetworkStatusChange: true,
       fetchPolicy: "no-cache",
-      onCompleted(data) { },
+      onCompleted(data) {
+        setTransactions(data?.getTransactionByMonth?.transactions);
+      },
       onError(error) {
-       console.log(`error`);
+        console.log(`error`);
       },
     }
   );
@@ -202,7 +218,7 @@ const Home = () => {
   }
 
   React.useEffect(() => {
-    getTransaction();
+    // getTransaction();
     const date = new Date();
     const newMonth = dayjs(new Date(date.getFullYear(), date.getMonth(), 1));
     const startDate = newMonth;
@@ -349,15 +365,7 @@ const Home = () => {
         </Grid>
         <Grid size={{ xs: 4 }} sx={{ ...theme.glassCard, alignContent: "center" }}>
           <PieChart
-            series={[
-              {
-                data: [
-                  { id: 0, value: 10, label: 'series A' },
-                  { id: 1, value: 15, label: 'series B' },
-                  { id: 2, value: 20, label: 'series C' },
-                ],
-              },
-            ]}
+            series={[{ data: chartData }]}
             width={200}
             height={200}
           />
