@@ -170,7 +170,7 @@ const UpsertTransaction = (props) => {
             }}
           >
             <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-              {transactionType === "income" ? getTransactionData ? "Add Income" : "Add Expense" : getTransactionData ? "Edit Income" : "Edit Expense"}
+              {transactionType === "income" ? getTransactionData ? "Edit Income" : "Add Income" : getTransactionData ? "Edit Expense" : "Add Expense"}
             </DialogTitle>
             <IconButton
               aria-label="close"

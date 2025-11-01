@@ -142,19 +142,21 @@ const Home = () => {
   const name = localStorage.getItem("name") || "";
   const displayName = name.charAt(0).toUpperCase();
   const email = localStorage.getItem("email") || "";
-  const [transactions, setTransactions] = React.useState([])
+  const [mothlytransactions, setMonthlytransactions] = React.useState([])
 
-  const grouped = transactions?.reduce((acc, t) => {
+  const grouped = mothlytransactions?.transactions?.reduce((acc, t) => {
     const category = t.category;
     const amount = Number(t.amount);
-    acc[category] = (acc[category] || 0) + amount;
+    if (category != "Salary" && category != "Allowance" && category != "Bonus") {
+      acc[category] = (acc[category] || 0) + amount;
+    }
     return acc;
   }, {});
 
   const chartData = Object.entries(grouped || {})?.map(([category, total], index) => ({
     id: index,
     value: total,
-    label: category,
+    label: `${category} ${(total / mothlytransactions?.totalIncome * 100).toFixed(0)} %`,
   }));
 
   const handleClick = (event) => {
@@ -187,7 +189,7 @@ const Home = () => {
       notifyOnNetworkStatusChange: true,
       fetchPolicy: "no-cache",
       onCompleted(data) {
-        setTransactions(data?.getTransactionByMonth?.transactions);
+        setMonthlytransactions(data?.getTransactionByMonth);
       },
       onError(error) {
         console.log(`error`);
@@ -365,7 +367,19 @@ const Home = () => {
         </Grid>
         <Grid size={{ xs: 4 }} sx={{ ...theme.glassCard, alignContent: "center" }}>
           <PieChart
-            series={[{ data: chartData }]}
+            series={[
+              {
+                data: [
+                  ...chartData,
+                  ...(getTransactionByMonthData?.getTransactionByMonth?.availableBalance > 0 ? [{
+                    value: getTransactionByMonthData?.getTransactionByMonth?.availableBalance,
+                    label: `Available Balance ${(getTransactionByMonthData?.getTransactionByMonth?.availableBalance / getTransactionByMonthData?.getTransactionByMonth?.totalIncome * 100).toFixed(0)}%`,
+                    color: "#249640",
+                  }] : []
+                  )
+                ],
+              },
+            ]}
             width={200}
             height={200}
           />
