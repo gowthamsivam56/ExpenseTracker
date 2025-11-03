@@ -50,9 +50,8 @@ const UPDATE_TRANSACTION = gql`
 
 const UpsertTransaction = (props) => {
   const theme = useTheme();
-  const { transactionType, getTransactionRefetch, getTransactionByMonthRefetch, getTransactionData } = props;
+  const { transactionType, getTransactionByMonthRefetch, getTransactionData } = props;
   const [open, setOpen] = React.useState(false);
-  const [amount, setAmount] = React.useState("");
 
   const categories =
     transactionType === "income"
@@ -124,7 +123,6 @@ const UpsertTransaction = (props) => {
           await updateTransaction({ variables: { _id: getTransactionData?._id, ...values, transactionType } })
           :
           await addTransaction({ variables: { ...values, transactionType } });
-        // getTransactionRefetch();
         await getTransactionByMonthRefetch();
         resetForm();
         setOpen(false);

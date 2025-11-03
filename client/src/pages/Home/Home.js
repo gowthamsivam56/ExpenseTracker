@@ -92,19 +92,6 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-const GET_TRANSACTION = gql`
-  query getTransaction {
-    getTransaction {
-      _id
-      date
-      category
-      description
-      amount
-      transactionType
-    }
-  }
-`;
-
 const GET_TRANSACTION_BY_MONTH = gql`
   query getTransactionByMonth ($startDate: String!, $endDate: String!) {
     getTransactionByMonth (startDate: $startDate, endDate: $endDate) {
@@ -173,16 +160,6 @@ const Home = () => {
     navigate('/');
   }
 
-  const [getTransaction, { loading, data, refetch: getTransactionRefetch }] = useLazyQuery(GET_TRANSACTION,
-    {
-      notifyOnNetworkStatusChange: true,
-      fetchPolicy: "no-cache",
-      onCompleted(data) { },
-      onError(error) {
-        console.log(`error`);
-      },
-    }
-  );
 
   const [getTransactionByMonth, { data: getTransactionByMonthData, refetch: getTransactionByMonthRefetch }] = useLazyQuery(GET_TRANSACTION_BY_MONTH,
     {
@@ -313,14 +290,12 @@ const Home = () => {
               <Grid size={{ xs: 6 }}>
                 <UpsertTransaction
                   transactionType={"income"}
-                  getTransactionRefetch={getTransactionRefetch}
                   getTransactionByMonthRefetch={getTransactionByMonthRefetch}
                 />
               </Grid>
               <Grid size={{ xs: 6 }}>
                 <UpsertTransaction
                   transactionType={"expense"}
-                  getTransactionRefetch={getTransactionRefetch}
                   getTransactionByMonthRefetch={getTransactionByMonthRefetch}
                 />
               </Grid>
@@ -424,7 +399,6 @@ const Home = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* {data?.getTransaction?.map((data) => ( */}
                 {getTransactionByMonthData?.getTransactionByMonth?.transactions?.map((data) => (
                   <TableRow>
                     <TableCell>{new Date(Number(data?.date)).toLocaleString()}</TableCell>
@@ -441,7 +415,7 @@ const Home = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <UpsertTransaction transactionType={data?.transactionType} getTransactionRefetch={getTransactionRefetch} getTransactionByMonthRefetch={getTransactionByMonthRefetch} getTransactionData={data} />
+                      <UpsertTransaction transactionType={data?.transactionType} getTransactionByMonthRefetch={getTransactionByMonthRefetch} getTransactionData={data} />
                       <Tooltip title="Delete">
                         <IconButton>
                           <DeleteOutlineOutlinedIcon onClick={() => handleDelete(data?._id)} />
