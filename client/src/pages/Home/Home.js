@@ -31,6 +31,7 @@ import dayjs from "dayjs";
 import Stack from '@mui/material/Stack';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { useNavigate } from 'react-router-dom';
+import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 
 import "./Home.css";
 import UpsertTransaction from "./UpsertTransaction";
@@ -146,20 +147,6 @@ const Home = () => {
     label: `${category} ${(total / mothlytransactions?.totalIncome * 100).toFixed(0)} %`,
   }));
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    setAnchorEl(null);
-    localStorage.clear();
-    navigate('/');
-  }
-
 
   const [getTransactionByMonth, { data: getTransactionByMonthData, refetch: getTransactionByMonthRefetch }] = useLazyQuery(GET_TRANSACTION_BY_MONTH,
     {
@@ -186,6 +173,20 @@ const Home = () => {
     }
   });
 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    setAnchorEl(null);
+    localStorage.clear();
+    navigate('/');
+  }
+
   const handleDelete = async (_id) => {
     await deleteTransactionById({ variables: { _id } });
   }
@@ -196,8 +197,47 @@ const Home = () => {
     getTransactionByMonth({ variables: { startDate, endDate } })
   }
 
+  const handleExportToCSV = async (data) => {
+    if (!data?.length) return;
+
+    const escapeCSV = (value) => {
+      if (value == null) return "";
+
+      const str = String(value);
+      if (/[",\n]/.test(str)) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    const excludeKeys = ["_id", "__typename"];
+
+    const allKeys = Object.keys(data[0]).filter((key) => !excludeKeys.includes(key));
+
+    const header = allKeys.map(escapeCSV).join(",");
+
+    const rows = data.map((obj) =>
+      allKeys.map((key) => {
+        let value = obj[key];
+        if (key === "date") {
+          value = new Date(Number(value)).toLocaleString();
+        }
+
+        return escapeCSV(value);
+      }).join(",")
+    );
+
+    const csv = [header, ...rows].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "transactions.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
   React.useEffect(() => {
-    // getTransaction();
     const date = new Date();
     const newMonth = dayjs(new Date(date.getFullYear(), date.getMonth(), 1));
     const startDate = newMonth;
@@ -395,7 +435,18 @@ const Home = () => {
                   <TableCell align="right">
                     <Typography variant="h5">Amount</Typography>
                   </TableCell>
-                  <TableCell />
+                  {
+                    getTransactionByMonthData?.getTransactionByMonth?.transactions?.length ?
+                      <TableCell sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Tooltip title="Export">
+                          <IconButton>
+                            <DownloadOutlinedIcon onClick={() => handleExportToCSV(getTransactionByMonthData?.getTransactionByMonth?.transactions)} />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                      :
+                      <TableCell />
+                  }
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -414,7 +465,7 @@ const Home = () => {
                         {data?.amount}
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ display: "flex", justifyContent: "flex-end" }}>
                       <UpsertTransaction transactionType={data?.transactionType} getTransactionByMonthRefetch={getTransactionByMonthRefetch} getTransactionData={data} />
                       <Tooltip title="Delete">
                         <IconButton>
