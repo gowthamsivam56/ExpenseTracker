@@ -9,7 +9,7 @@ const dbName = localStorage.getItem("dbName") || "";
 
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: "http://localhost:4000/graphql",
+    uri: process.env.REACT_APP_API_URL,
     headers: {
       dbname: dbName || '',
     },
