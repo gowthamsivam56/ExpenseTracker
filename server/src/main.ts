@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from 'express';
 import { ApolloServer } from "@apollo/server";
 import cors from 'cors';
@@ -21,6 +23,7 @@ import { readFileSync } from 'fs';
 // };
 
 const typeDefs = readFileSync(__dirname + '/gql/schema.gql', 'utf8');
+const PORT = process.env.PORT || 4000;
 
 // Set up Apollo Server
 const startServer = async () => {
@@ -49,8 +52,8 @@ const startServer = async () => {
         })
     );
 
-    app.listen(4000, () => {
-        console.log('Server ready at http://localhost:4000/graphql');
+    app.listen(PORT, () => {
+        console.log(`GraphQL server running on port ${PORT}`);
     });
 };
 
