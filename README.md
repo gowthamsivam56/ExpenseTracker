@@ -45,6 +45,12 @@ Install MongoDB:
 npm install mongodb
 ```
 
+Install dotenv to manage environment variables:
+
+```sh
+npm install dotenv
+```
+
 ---
 
 ## Create React Frontend
