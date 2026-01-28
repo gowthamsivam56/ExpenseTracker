@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import Link from '@mui/material/Link';
 import { Box } from '@mui/material';
 import { gql, useMutation } from "@apollo/client";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 const SIGNUP = gql`
   mutation signUp($fullname: String!, $email: String!, $password: String!) {
@@ -109,7 +109,7 @@ const Signup = () => {
                                     alignItems: "center",
                                 }}>
                                     Already have an account?
-                                    <Link href="/" underline="hover">
+                                    <Link component={RouterLink} to="/" underline="hover">
                                         Login
                                     </Link>
                                 </Grid>
