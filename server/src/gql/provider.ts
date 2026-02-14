@@ -1,15 +1,22 @@
 import { checkUser, signup, createUserDB, addtransaction, updatetransaction, deletetransactionById, gettransaction, gettransactionByMonth } from "../clients/mongo";
 import { GraphQLError } from "graphql";
+import bcrypt from "bcrypt";
 
 
 export async function signUp(args: any) {
     try {
+        const hashedPassword = await bcrypt.hash(args?.password, 10);
         const dbName = `user_${args.email.replace(/[@.]/g, "_")}`;
         const existingUser = await checkUser(args?.email);
         if (existingUser) {
             throw new Error("User already exists with this email");
         }
-        const data = await signup(dbName, args);
+        const user = {
+            fullname: args?.fullname,
+            email: args?.email,
+            password: hashedPassword,
+        }
+        const data = await signup(dbName, user);
         await createUserDB(dbName);
         console.log(`data`, data);
         if (data) {
@@ -38,7 +45,8 @@ export async function logIn(args: any) {
             throw new Error("User not found");
         }
 
-        if (user.password != args.password) {
+        const isMatch = await bcrypt.compare(args?.password, user?.password);
+        if (!isMatch) {
             throw new Error("Invalid password");
         }
 
