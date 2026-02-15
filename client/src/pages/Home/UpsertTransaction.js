@@ -271,7 +271,7 @@ const UpsertTransaction = (props) => {
               <Button autoFocus onClick={handleClose}>
                 Cancel
               </Button>
-              <Button autoFocus onClick={submitForm}>
+              <Button loading={ addTransactionLoading || updateTransactionLoading } loadingPosition="start" autoFocus onClick={submitForm}>
                 Save
               </Button>
             </DialogActions>
