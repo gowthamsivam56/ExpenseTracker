@@ -9,6 +9,7 @@ import Link from '@mui/material/Link';
 import { Box } from '@mui/material';
 import { gql, useMutation } from "@apollo/client";
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { regex } from '../../config';
 
 const SIGNUP = gql`
   mutation signUp($fullname: String!, $email: String!, $password: String!) {
@@ -51,6 +52,32 @@ const Signup = () => {
                         fullname: '',
                         email: '',
                         password: ''
+                    }}
+                    validate={(values) => {
+                        const errors = {};
+
+                        if (!values.fullname) {
+                            errors.fullname = 'Required';
+                        }
+                        else if(!regex.Fullname.test(values.fullname)) {
+                            errors.fullname = 'Supported Characters: Alphanumeric,Numbers,Space and \'.\-_!#^~\\';
+                        }
+
+                        if (!values.email) {
+                            errors.email = 'Required';
+                        }
+                        else if(!regex.Mail.test(values.email)) {
+                            errors.email = 'Enter a valid email';
+                        }
+
+                        if (!values.password) {
+                            errors.password = 'Required';
+                        }
+                        else if(!regex.Password.test(values.password)) {
+                            errors.password = 'Password must be 8-25 characters and contain one uppercase, lowercase, number and special character except space and back-slash';
+                        }
+
+                        return errors;
                     }}
                     onSubmit={async (values) => {
                         await signUp({ variables: { ...values } });
