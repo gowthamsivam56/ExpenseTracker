@@ -8,6 +8,7 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { connectDB } from './clients/mongo';
 import { resolvers } from './gql/resolvers';
 import { readFileSync } from 'fs';
+import { gql } from "graphql-tag";
 
 
 // const typeDefs = `
@@ -22,7 +23,7 @@ import { readFileSync } from 'fs';
 //     },
 // };
 
-const typeDefs = readFileSync(__dirname + '/gql/schema.gql', 'utf8');
+const typeDefs = gql(readFileSync(__dirname + '/gql/schema.gql', 'utf8'));
 const PORT = process.env.PORT || 4000;
 
 // Set up Apollo Server
