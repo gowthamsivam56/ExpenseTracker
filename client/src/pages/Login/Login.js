@@ -1,3 +1,4 @@
+import React from "react";
 import Paper from '@mui/material/Paper';
 import { Formik, Form, Field } from "formik";
 import { styled, useTheme } from "@mui/material/styles";
@@ -29,6 +30,7 @@ const LOGIN = gql`
 const Login = () => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const [generalError, setGeneralError] = React.useState("");
 
     const [logIn, { loading: logInLoading, error: logInError, data: logInData }] = useMutation(LOGIN, {
         onCompleted(data) {
@@ -40,7 +42,7 @@ const Login = () => {
             }
         },
         onError(error) {
-            console.log(`error`);
+            console.log(`error`,error);
         },
     });
 
@@ -66,21 +68,32 @@ const Login = () => {
                         if (!values.email) {
                             errors.email = 'Required';
                         }
-                        else if(!regex.Mail.test(values.email)) {
-                            errors.email = 'Enter a valid email';
-                        }
 
                         if (!values.password) {
                             errors.password = 'Required';
                         }
-                        else if(!regex.Password.test(values.password)) {
-                            errors.password = 'Password must be 8-25 characters and contain one uppercase, lowercase, number and special character except space and back-slash';
-                        }
 
                         return errors;
                     }}
-                    onSubmit={async (values) => {
-                        await logIn({ variables: { ...values } });
+                    onSubmit={async (values, { setFieldError }) => {
+                        setGeneralError("");
+                        try{
+                            const { data } = await logIn({ variables: { ...values } });
+                            if (data?.logIn?.success === false) {
+                                if(data?.logIn?.code === "I_LOGIN_EMAIL_NOT_FOUND") {
+                                    setFieldError("email", data?.logIn?.message)
+                                }
+                                else if(data?.logIn?.code === "I_LOGIN_INVALID_PASSWORD") {
+                                    setFieldError("password", data?.logIn?.message)
+                                }
+                                else {
+                                    setGeneralError(data?.logIn?.message);
+                                }
+                            }
+                        }
+                        catch(error) {
+                            setGeneralError("Server unreachable. Please try later");
+                        }
                     }}
                 >
                     <Form>
@@ -94,6 +107,12 @@ const Login = () => {
                                     Login
                                 </Typography>
                             </Grid>
+                            {
+                                generalError &&
+                                <Grid size={{ xs: 12 }}>
+                                    <Typography variant="body2" color="error">{generalError}</Typography>
+                                </Grid>
+                            }
                             <Grid size={{ xs: 12 }}>
                                 <Field
                                     component={TextField}

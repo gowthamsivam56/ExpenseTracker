@@ -1,3 +1,4 @@
+import React from "react";
 import Paper from '@mui/material/Paper';
 import { Formik, Form, Field } from "formik";
 import { styled, useTheme } from "@mui/material/styles";
@@ -24,6 +25,7 @@ const SIGNUP = gql`
 const Signup = () => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const [generalError, setGeneralError] = React.useState("");
 
     const [signUp, { loading: signupLoading, error: signupError, data: signupData }] = useMutation(SIGNUP, {
         onCompleted(data) {
@@ -32,7 +34,7 @@ const Signup = () => {
             }
         },
         onError(error) {
-            console.log(`error`);
+            console.log(`error`,error);
         },
     });
 
@@ -79,8 +81,22 @@ const Signup = () => {
 
                         return errors;
                     }}
-                    onSubmit={async (values) => {
-                        await signUp({ variables: { ...values } });
+                    onSubmit={async (values, { setFieldError }) => {
+                        setGeneralError("");
+                        try{
+                            const { data } = await signUp({ variables: { ...values } });
+                            if (data?.signUp?.success === false) {
+                                if(data?.signUp?.code === "I_SIGNUP_EMAIL_ALREADY_EXISTS") {
+                                    setFieldError("email", data?.signUp?.message)
+                                }
+                                else {
+                                    setGeneralError(data?.signUp?.message);
+                                }
+                            }
+                        }
+                        catch(error) {
+                            setGeneralError("Server unreachable. Please try later");
+                        }
                     }}
                 >
                     {({ submitForm }) => (
@@ -125,6 +141,12 @@ const Signup = () => {
                                         fullWidth
                                     />
                                 </Grid>
+                                {
+                                    generalError &&
+                                    <Grid size={{ xs: 12 }}>
+                                        <Typography variant="body2" color="error">{generalError}</Typography>
+                                    </Grid>
+                                }
                                 <Grid size={{ xs: 12 }}>
                                     <Button type="submit" sx={{ ...theme.glassCard }} fullWidth>
                                         SIGN UP
