@@ -9,7 +9,11 @@ export async function signUp(args: any) {
         const dbName = `user_${args.email.replace(/[@.]/g, "_")}`;
         const existingUser = await checkUser(args?.email);
         if (existingUser) {
-            throw new Error("User already exists with this email");
+            return {
+                code: "I_SIGNUP_EMAIL_ALREADY_EXISTS",
+                success: false,
+                message: "Email already exists",
+            };
         }
         const user = {
             fullname: args?.fullname,
@@ -23,7 +27,7 @@ export async function signUp(args: any) {
             return {
                 code: "I_SIGNUP_SUCCESS",
                 success: true,
-                message: "User signed up successfully",
+                message: "Signup successfully",
             };
         } else {
             return {
@@ -33,7 +37,11 @@ export async function signUp(args: any) {
             };
         }
     } catch (e: any) {
-        throw e.message;
+        return {
+            code: "I_SIGNUP_ERROR",
+            success: false,
+            message: e?.message || "Something went wrong",
+        };
     }
 
 }
@@ -42,18 +50,26 @@ export async function logIn(args: any) {
     try {
         const user = await checkUser(args?.email);
         if (!user) {
-            throw new Error("User not found");
+            return {
+                code: "I_LOGIN_EMAIL_NOT_FOUND",
+                success: false,
+                message: "Email not found",
+            };
         }
 
         const isMatch = await bcrypt.compare(args?.password, user?.password);
         if (!isMatch) {
-            throw new Error("Invalid password");
+            return {
+                code: "I_LOGIN_INVALID_PASSWORD",
+                success: false,
+                message: "Invalid password",
+            };
         }
 
         return {
             code: "I_LOGIN_SUCCESS",
             success: true,
-            message: "User login successfully",
+            message: "Login successfully",
             user: {
                 fullname: user.fullname,
                 email: user.email,
@@ -61,7 +77,11 @@ export async function logIn(args: any) {
             }
         };
     } catch (e: any) {
-        throw e.message;
+        return {
+            code: "I_LOGIN_ERROR",
+            success: false,
+            message: e?.message || "Something went wrong",
+        };
     }
 }
 
