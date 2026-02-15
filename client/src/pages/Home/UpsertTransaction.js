@@ -29,7 +29,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 const ADD_TRANSACTION = gql`
-  mutation addTransaction($date: String!, $category: String!, $description: String!, $amount: String!, $transactionType: String!) {
+  mutation addTransaction($date: String!, $category: String!, $description: String!, $amount: Float!, $transactionType: String!) {
     addTransaction(date: $date, category: $category, description: $description, amount: $amount, transactionType: $transactionType) {
       code
       success
@@ -39,7 +39,7 @@ const ADD_TRANSACTION = gql`
 `;
 
 const UPDATE_TRANSACTION = gql`
-  mutation updateTransaction($_id: ID!, $date: String!, $category: String!, $description: String!, $amount: String!, $transactionType: String!) {
+  mutation updateTransaction($_id: ID!, $date: String!, $category: String!, $description: String!, $amount: Float!, $transactionType: String!) {
     updateTransaction(_id: $_id, date: $date, category: $category, description: $description, amount: $amount, transactionType: $transactionType) {
       code
       success
@@ -57,13 +57,22 @@ const UpsertTransaction = (props) => {
     transactionType === "income"
       ? [
         { label: "Salary", value: "Salary" },
-        { label: "Allowance", value: "Allowance" },
-        { label: "Bonus", value: "Bonus" },
+        { label: "Business / Freelance", value: "Business / Freelance" },
+        { label: "Other Income", value: "Other Income" }
       ]
       : [
-        { label: "Food", value: "Food" },
-        { label: "Movie", value: "Movie" },
-        { label: "Subscription", value: "Subscription" },
+        { label: "Food & Dining", value: "Food & Dining" },
+        { label: "Groceries", value: "Groceries" },
+        { label: "Transportation", value: "Transportation" },
+        { label: "Rent", value: "Rent" },
+        { label: "Bills & Utilities", value: "Bills & Utilities" },
+        { label: "EMI / Loan", value: "EMI / Loan" },
+        { label: "Shopping", value: "Shopping" },
+        { label: "Entertainment", value: "Entertainment" },
+        { label: "Subscriptions", value: "Subscriptions" },
+        { label: "Health & Medical", value: "Health & Medical" },
+        { label: "Education", value: "Education" },
+        { label: "Travel", value: "Travel" }
       ];
 
   const [addTransaction, { loading: addTransactionLoading, error: addTransactionError, data: addTransactionData }] = useMutation(ADD_TRANSACTION, {
@@ -108,6 +117,10 @@ const UpsertTransaction = (props) => {
         if (!values.amount) {
           errors.amount = 'Required';
         }
+        else if(Number(values.amount)<1 || Number(values.amount)>10000000) {
+          errors.amount = "Allowed range: ₹1 - ₹1,00,00,000";
+        }
+
         if (!values.category) {
           errors.category = 'Required';
         }
@@ -120,9 +133,9 @@ const UpsertTransaction = (props) => {
       }}
       onSubmit={async (values, { resetForm }) => {
         getTransactionData ?
-          await updateTransaction({ variables: { _id: getTransactionData?._id, ...values, transactionType } })
+          await updateTransaction({ variables: { _id: getTransactionData?._id, ...values, amount:Number(values?.amount), transactionType } })
           :
-          await addTransaction({ variables: { ...values, transactionType } });
+          await addTransaction({ variables: { ...values, amount:Number(values?.amount), transactionType } });
         await getTransactionByMonthRefetch();
         resetForm();
         setOpen(false);
@@ -209,11 +222,12 @@ const UpsertTransaction = (props) => {
                 <Grid size={{ xs: 5 }}>
                   <Field
                     component={TextField}
-                    type="text"
+                    type="number"
                     name="amount"
                     label="Amount"
                     variant="outlined"
                     fullWidth
+                    InputProps={{ inputProps: {min: 1, max: 10000000} }}
                   />
                 </Grid>
                 <Grid size={{ xs: 12 }}>

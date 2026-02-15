@@ -32,10 +32,16 @@ import Stack from '@mui/material/Stack';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { useNavigate } from 'react-router-dom';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
+import { defineMessages, FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 
 import "./Home.css";
 import UpsertTransaction from "./UpsertTransaction";
 import { ThemeToggleContext } from "../../theme/ThemeProviderWrapper";
+
+
+const messages = defineMessages({
+  NoRecordsLabel: { id: 'Expense.NoRecords', description: 'Expense Table  - NoRecords', defaultMessage: 'No Records Found' },
+});
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -347,7 +353,7 @@ const Home = () => {
                     <CardContent sx={{ height: "158px" }}>
                       <Typography variant="h5">Total Income</Typography>
                       <Typography variant="h3" color="text.secondary">
-                        {getTransactionByMonthData?.getTransactionByMonth?.totalIncome}
+                        <FormattedNumber value={getTransactionByMonthData?.getTransactionByMonth?.totalIncome || 0} style="currency" currency="INR" />
                       </Typography>
                     </CardContent>
                   </CardActionArea>
@@ -359,7 +365,7 @@ const Home = () => {
                     <CardContent sx={{ height: "158px" }}>
                       <Typography variant="h5">Total Expense</Typography>
                       <Typography variant="h3" color="text.secondary">
-                        {getTransactionByMonthData?.getTransactionByMonth?.totalExpense}
+                        <FormattedNumber value={getTransactionByMonthData?.getTransactionByMonth?.totalExpense || 0} style="currency" currency="INR" />
                       </Typography>
                     </CardContent>
                   </CardActionArea>
@@ -371,7 +377,7 @@ const Home = () => {
                     <CardContent sx={{ height: "158px" }}>
                       <Typography variant="h5">Available Balance</Typography>
                       <Typography variant="h3" color="text.secondary">
-                        {getTransactionByMonthData?.getTransactionByMonth?.availableBalance}
+                        <FormattedNumber value={getTransactionByMonthData?.getTransactionByMonth?.availableBalance || 0} style="currency" currency="INR" />
                       </Typography>
                     </CardContent>
                   </CardActionArea>
@@ -450,31 +456,44 @@ const Home = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {getTransactionByMonthData?.getTransactionByMonth?.transactions?.map((data) => (
-                  <TableRow>
-                    <TableCell>{new Date(Number(data?.date)).toLocaleString()}</TableCell>
-                    <TableCell>{data?.category}</TableCell>
-                    <TableCell>{data?.description}</TableCell>
-                    <TableCell align="right">
-                      <Typography
-                        color={
-                          data?.transactionType === "income" ? "green" : "red"
-                        }
-                      >
-                        {data?.transactionType === "income" ? "+" : "-"}{" "}
-                        {data?.amount}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ display: "flex", justifyContent: "flex-end" }}>
-                      <UpsertTransaction transactionType={data?.transactionType} getTransactionByMonthRefetch={getTransactionByMonthRefetch} getTransactionData={data} />
-                      <Tooltip title="Delete">
-                        <IconButton>
-                          <DeleteOutlineOutlinedIcon onClick={() => handleDelete(data?._id)} />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {getTransactionByMonthData?.getTransactionByMonth?.transactions?.length ? 
+                  (getTransactionByMonthData?.getTransactionByMonth?.transactions?.map((data) => (
+                    <TableRow>
+                      <TableCell>{new Date(Number(data?.date)).toLocaleString()}</TableCell>
+                      <TableCell>{data?.category}</TableCell>
+                      <TableCell>{data?.description}</TableCell>
+                      <TableCell align="right">
+                        <Typography
+                          color={
+                            data?.transactionType === "income" ? "green" : "red"
+                          }
+                        >
+                          {data?.transactionType === "income" ? "+" : "-"}{" "}
+                          {<FormattedNumber value={data?.amount} style="currency" currency="INR" />}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <UpsertTransaction transactionType={data?.transactionType} getTransactionByMonthRefetch={getTransactionByMonthRefetch} getTransactionData={data} />
+                        <Tooltip title="Delete">
+                          <IconButton>
+                            <DeleteOutlineOutlinedIcon onClick={() => handleDelete(data?._id)} />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5}>
+                        <Typography variant="body1">
+                          <Box fontWeight="fontWeightBold" m={19.4} display="flex" justifyContent="center">
+                            <FormattedMessage {...messages.NoRecordsLabel} />
+                          </Box>
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )
+                }
               </TableBody>
             </Table>
           </TableContainer>

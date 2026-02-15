@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
+import { IntlProvider } from 'react-intl';
 
 const dbName = localStorage.getItem("dbName") || "";
 
@@ -20,9 +21,11 @@ const client = new ApolloClient({
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
+    <IntlProvider locale="en">
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
+    </IntlProvider>
   </React.StrictMode>
 );
 
