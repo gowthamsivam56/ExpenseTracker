@@ -10,7 +10,10 @@ import Link from '@mui/material/Link';
 import { Box } from '@mui/material';
 import { gql, useMutation } from "@apollo/client";
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { regex } from '../../config';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const LOGIN = gql`
   mutation logIn($email: String!, $password: String!) {
@@ -31,6 +34,7 @@ const Login = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const [generalError, setGeneralError] = React.useState("");
+    const [showPassword, setShowPassword] = React.useState(false);
 
     const [logIn, { loading: logInLoading, error: logInError, data: logInData }] = useMutation(LOGIN, {
         onCompleted(data) {
@@ -126,11 +130,20 @@ const Login = () => {
                             <Grid size={{ xs: 12 }}>
                                 <Field
                                     component={TextField}
-                                    type="text"
+                                    type={showPassword ? "text" : "password"}
                                     name="password"
                                     label="Password"
                                     variant="outlined"
                                     fullWidth
+                                    InputProps={{
+                                        endAdornment:
+                                            <InputAdornment position={'end'}>
+                                                <IconButton onClick={() => setShowPassword(!showPassword)}>
+                                                    {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        
+                                    }}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12 }}>
