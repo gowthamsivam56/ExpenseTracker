@@ -38,6 +38,22 @@ export async function signup(dbName: string, args: any) {
     }
 };
 
+export async function forgotpassword(email: string , resetToken: string , resetTokenExpiry: Date) {
+    try {
+        return await client.db("expense_tracker").collection("users").updateOne(
+            { email},
+            {
+                $set: {
+                    resetToken, 
+                    resetTokenExpiry
+                }
+            }
+);
+    } catch (e: any) {
+        throw new Error(`Failed to update reset token: ${e.message}`);
+    }
+};
+
 export async function createUserDB(dbName: string) {
     if (!dbName) throw new Error('Database client is not initialized.');
     try {

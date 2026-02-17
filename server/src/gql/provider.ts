@@ -1,6 +1,8 @@
-import { checkUser, signup, createUserDB, addtransaction, updatetransaction, deletetransactionById, gettransaction, gettransactionByMonth } from "../clients/mongo";
+import { checkUser, signup, createUserDB, addtransaction, updatetransaction, deletetransactionById, gettransaction, gettransactionByMonth, forgotpassword } from "../clients/mongo";
 import { GraphQLError } from "graphql";
 import bcrypt from "bcrypt";
+import { randomBytes } from "crypto";
+import { sendResetEmail } from "../utils/mailer"
 
 
 export async function signUp(args: any) {
@@ -79,6 +81,46 @@ export async function logIn(args: any) {
     } catch (e: any) {
         return {
             code: "I_LOGIN_ERROR",
+            success: false,
+            message: e?.message || "Something went wrong",
+        };
+    }
+}
+
+export async function forgotPassword(args: any) {
+    try {
+        const user = await checkUser(args?.email);
+        if (!user) {
+            return {
+                code: "I_FORGOT_PASSWORD_EMAIL_NOT_FOUND",
+                success: false,
+                message: "Email not found",
+            };
+        }
+        const resetToken = randomBytes(32).toString("hex");
+        const hashedToken = await bcrypt.hash(resetToken, 10);
+        const resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000);
+
+        const data = await forgotpassword(user?.email, hashedToken, resetTokenExpiry);
+        if (data.modifiedCount === 1) {
+            const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+            await sendResetEmail(user?.email, resetLink);
+            return {
+                code: "I_FORGOT_PASSWORD_SUCCESS",
+                success: true,
+                message: "Password reset link sent to email",
+            }
+        } else {
+            return {
+                code: "I_FORGOT_PASSWORD_FAILED",
+                success: false,
+                message: "Failed to process request",
+            }
+        }
+
+    } catch (e: any) {
+        return {
+            code: "I_FORGOT_PASSWORD_ERROR",
             success: false,
             message: e?.message || "Something went wrong",
         };
