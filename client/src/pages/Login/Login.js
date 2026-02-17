@@ -16,18 +16,18 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const LOGIN = gql`
-  mutation logIn($email: String!, $password: String!) {
-    logIn(email: $email, password: $password) {
-      code
-      success
-      message
-      user{
-        fullname
-        email
-        dbName
-      }
+    mutation logIn($email: String!, $password: String!) {
+        logIn(email: $email, password: $password) {
+            code
+            success
+            message
+            user{
+                fullname
+                email
+                dbName
+            }
+        }
     }
-  }
 `;
 
 const Login = () => {
@@ -147,8 +147,8 @@ const Login = () => {
                                 />
                             </Grid>
                             <Grid size={{ xs: 12 }}>
-                                <Link href="#" underline="hover">
-                                    Forget password?
+                                <Link component={RouterLink} to="/forgot-password" underline="hover">
+                                    Forgot password?
                                 </Link>
                             </Grid>
                             <Grid size={{ xs: 12 }}>

@@ -17,13 +17,13 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { regex } from '../../config';
 
 const SIGNUP = gql`
-  mutation signUp($fullname: String!, $email: String!, $password: String!) {
-    signUp(fullname: $fullname, email: $email, password: $password) {
-      code
-      success
-      message
+    mutation signUp($fullname: String!, $email: String!, $password: String!) {
+        signUp(fullname: $fullname, email: $email, password: $password) {
+            code
+            success
+            message
+        }
     }
-  }
 `;
 
 const Signup = () => {
