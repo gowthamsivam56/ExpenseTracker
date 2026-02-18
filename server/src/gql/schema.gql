@@ -48,6 +48,7 @@ type Mutation {
   signUp(fullname: String!, email: String!, password: String!): Response!
   logIn(email: String!, password: String!): LoginResponse!
   forgotPassword(email: String!): Response!
+  resetPassword(userId: ID!, token: String!, password: String!): Response!
   addTransaction(date: String!, category: String!, description: String!, amount: Float!, transactionType: String!): Response!
   updateTransaction(_id: ID!, date: String!, category: String!, description: String!, amount: Float!, transactionType: String!): Response!
   deleteTransactionById(_id: ID!): Response!

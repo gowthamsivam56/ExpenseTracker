@@ -19,11 +19,36 @@ export async function connectDB() {
     }
 }
 
-export async function checkUser( email: string) {
+export async function checkUser(email: string) {
     try {
         return await client.db("expense_tracker").collection("users").findOne({ email});
     } catch (e: any) {
         throw new Error(`Failed to check user in database: ${e.message}`);
+    }
+};
+
+export async function checkUserById(_id: string) {
+    try {
+        return await client.db("expense_tracker").collection("users").findOne({ _id: new ObjectId(_id) });
+    } catch (e: any) {
+        throw new Error(`Failed to check user by id in database: ${e.message}`);
+    }
+};
+
+export async function updatePassword(userId: string, password: string) {
+    try {
+        return await client.db("expense_tracker").collection("users").updateOne(
+            { _id: new ObjectId(userId) },
+            {
+                $set: { password },
+                $unset: {
+                    resetToken: "",
+                    resetTokenExpiry: "",
+                },
+            }
+        );
+    } catch (e: any) {
+        throw new Error(`Failed to check user by id in database: ${e.message}`);
     }
 };
 

@@ -1,4 +1,4 @@
-import { checkUser, signup, createUserDB, addtransaction, updatetransaction, deletetransactionById, gettransaction, gettransactionByMonth, forgotpassword } from "../clients/mongo";
+import { checkUser, signup, createUserDB, addtransaction, updatetransaction, deletetransactionById, gettransaction, gettransactionByMonth, forgotpassword, checkUserById, updatePassword } from "../clients/mongo";
 import { GraphQLError } from "graphql";
 import bcrypt from "bcrypt";
 import { randomBytes } from "crypto";
@@ -103,7 +103,7 @@ export async function forgotPassword(args: any) {
 
         const data = await forgotpassword(user?.email, hashedToken, resetTokenExpiry);
         if (data.modifiedCount === 1) {
-            const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+            const resetLink = `${process.env.FRONTEND_URL}/reset-password/${user._id}/${resetToken}`;
             await sendResetEmail(user?.email, resetLink);
             return {
                 code: "I_FORGOT_PASSWORD_SUCCESS",
@@ -121,6 +121,54 @@ export async function forgotPassword(args: any) {
     } catch (e: any) {
         return {
             code: "I_FORGOT_PASSWORD_ERROR",
+            success: false,
+            message: e?.message || "Something went wrong",
+        };
+    }
+}
+
+export async function resetPassword(args: any) {
+    try {
+        const user = await checkUserById(args?.userId);
+        if (!user) {
+            return {
+                code: "EMAIL_NOT_FOUND",
+                success: false,
+                message: "Email not found",
+            };
+        }
+
+        if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+            return {
+                code: "TOKEN_EXPIRED",
+                success: false,
+                message: "Reset link expired",
+            };
+        }
+
+        const isMatch = await bcrypt.compare(args?.token, user.resetToken);
+
+        if (!isMatch) {
+            return {
+                code: "INVALID_TOKEN",
+                success: false,
+                message: "Invalid reset link",
+            };
+        }
+
+        const hashedPassword = await bcrypt.hash(args?.password, 10);
+
+        await updatePassword(args?.userId, hashedPassword);
+
+        return {
+            code: "PASSWORD_RESET_SUCCESS",
+            success: true,
+            message: "Password reset successful",
+        };
+
+    } catch (e: any) {
+        return {
+            code: "I_RESET_PASSWORD_ERROR",
             success: false,
             message: e?.message || "Something went wrong",
         };
