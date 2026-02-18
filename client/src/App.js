@@ -12,7 +12,7 @@ function App() {
     <ThemeProviderWrapper>
       <BrowserRouter>
         <Routes>
-          <Route path='/reset-password' element={<ResetPassword />} />
+          <Route path='/reset-password/:userId/:token' element={<ResetPassword />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/home' element={<Home />} />
           <Route path='/signup' element={<Signup />} />
