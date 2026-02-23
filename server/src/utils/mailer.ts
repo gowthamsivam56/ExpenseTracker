@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import SMTPTransport from "nodemailer/lib/smtp-transport";
 
 export const sendResetEmail = async (to: string, resetLink: string) => {
   const transporter = nodemailer.createTransport({
@@ -9,7 +10,7 @@ export const sendResetEmail = async (to: string, resetLink: string) => {
       user: process.env.MAIL_USER,
       pass: process.env.MAIL_PASS,
     },
-  });
+  } as SMTPTransport.Options);
 
   await transporter.sendMail({
     from: process.env.MAIL_USER,
