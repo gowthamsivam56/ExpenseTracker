@@ -50,6 +50,13 @@ Install dotenv to manage environment variables:
 ```sh
 npm install dotenv
 ```
+```sh
+npm install bcrypt
+npm install -D @types/bcrypt
+npm install graphql-tag
+npm install nodemailer
+npm install -D @types/nodemailer
+```
 
 ---
 
@@ -72,6 +79,7 @@ npm install formik
 npm install formik-mui
 npm install @mui/x-charts
 npm install react-router-dom
+npm install react-intl --legacy-peer-deps
 ```
 
 ---
