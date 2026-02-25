@@ -8,6 +8,7 @@ npm init -y
 npm install express@4 @apollo/server graphql cors body-parser
 npm install --save-dev typescript ts-node nodemon @types/node @types/cors
 npx tsc --init
+npm install --save-dev copyfiles
 ```
 
 Create source folder and entry file:
@@ -20,10 +21,32 @@ touch src/main.ts
 Update `package.json`:
 
 ```json
-"main": "src/main.ts",
+"main": "dist/main.js",
 "scripts": {
-  "start": "ts-node src/main.ts",
-  "dev": "nodemon --watch src --exec ts-node src/main.ts"
+  "build": "tsc && npm run copy-files",
+  "copy-files": "copyfiles -u 1 src/**/*.gql dist/",
+  "start": "node dist/main.js",
+  "dev": "nodemon --watch src --exec ts-node src/main.ts",
+  "test": "echo \"Error: no test specified\" && exit 1"
+},
+```
+Update `tsconfig.json`;
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "rootDir": "./src",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
 ```
 
@@ -36,6 +59,7 @@ npm run dev
 For normal start:
 
 ```sh
+npm install && npm run build
 npm start
 ```
 
@@ -54,8 +78,17 @@ npm install dotenv
 npm install bcrypt
 npm install -D @types/bcrypt
 npm install graphql-tag
-npm install nodemailer
-npm install -D @types/nodemailer
+npm install googleapis
+```
+
+Update `.gitignore`;
+
+```
+# Node modules
+node_modules/
+
+# Environment variables
+.env
 ```
 
 ---
