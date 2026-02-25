@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "dist/main.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run copy-files",
+    "copy-files": "copyfiles -u 1 src/**/*.gql dist/",
     "start": "node dist/main.js",
     "dev": "nodemon --watch src --exec ts-node src/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -30,6 +31,7 @@
     "@types/cors": "^2.8.19",
     "@types/node": "^24.0.3",
     "@types/nodemailer": "^7.0.11",
+    "copyfiles": "^2.4.1",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
