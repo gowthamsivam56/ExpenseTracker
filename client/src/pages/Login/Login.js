@@ -14,6 +14,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import useAlert, { Success, Error, Warning } from '../../components/Alert/CustomAlert';
 
 const LOGIN = gql`
     mutation logIn($email: String!, $password: String!) {
@@ -33,16 +34,20 @@ const LOGIN = gql`
 const Login = () => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const {open: openSuccess, message: messageSuccess, handleOpen: showSuccess, handleClose: closeSuccess} = useAlert();
     const [generalError, setGeneralError] = React.useState("");
     const [showPassword, setShowPassword] = React.useState(false);
 
     const [logIn, { loading: logInLoading, error: logInError, data: logInData }] = useMutation(LOGIN, {
         onCompleted(data) {
             if (data?.logIn?.success === true) {
+                showSuccess(data?.logIn?.message);
                 localStorage.setItem("dbName", data?.logIn?.user?.dbName);
                 localStorage.setItem("name", data?.logIn?.user?.fullname);
                 localStorage.setItem("email", data?.logIn?.user?.email);
-                navigate('/home');
+                setTimeout(() => {
+                    navigate('/home');
+                }, 300);
             }
         },
         onError(error) {
@@ -56,6 +61,7 @@ const Login = () => {
             justifyContent: "center",
             alignItems: "center", minHeight: "100vh"
         }}>
+            <Success open={openSuccess} message={messageSuccess} onClose={closeSuccess} />
             <Paper variant="elevation" sx={{
                 ...theme.glassCard,
                 width: "40%",

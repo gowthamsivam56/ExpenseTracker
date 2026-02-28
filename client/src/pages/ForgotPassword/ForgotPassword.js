@@ -9,7 +9,8 @@ import Button from "@mui/material/Button";
 import Link from '@mui/material/Link';
 import { Box } from '@mui/material';
 import { gql, useMutation } from "@apollo/client";
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import useAlert, { Success, Error, Warning } from '../../components/Alert/CustomAlert';
 
 const FORGOTPASSWORD = gql`
     mutation forgotPassword($email: String!) {
@@ -23,11 +24,12 @@ const FORGOTPASSWORD = gql`
 
 const ForgotPassword = () => {
     const theme = useTheme();
-    const navigate = useNavigate();
+    const {open: openSuccess, message: messageSuccess, handleOpen: showSuccess, handleClose: closeSuccess} = useAlert();
     const [generalError, setGeneralError] = React.useState("");
 
     const [forgotPassword, { loading: forgotPasswordLoading, error: forgotPasswordError, data: forgotPasswordData }] = useMutation(FORGOTPASSWORD, {
         onCompleted(data) {
+            showSuccess(data?.forgotPassword?.message);
         },
         onError(error) {
             console.log(`error`,error);
@@ -40,6 +42,7 @@ const ForgotPassword = () => {
             justifyContent: "center",
             alignItems: "center", minHeight: "100vh"
         }}>
+            <Success open={openSuccess} message={messageSuccess} onClose={closeSuccess} />
             <Paper variant="elevation" sx={{
                 ...theme.glassCard,
                 width: "40%",

@@ -15,6 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { regex } from '../../config';
+import useAlert, { Success, Error, Warning } from '../../components/Alert/CustomAlert';
 
 const SIGNUP = gql`
     mutation signUp($fullname: String!, $email: String!, $password: String!) {
@@ -31,11 +32,15 @@ const Signup = () => {
     const navigate = useNavigate();
     const [generalError, setGeneralError] = React.useState("");
     const [showPassword, setShowPassword] = React.useState(false);
+    const {open: openSuccess, message: messageSuccess, handleOpen: showSuccess, handleClose: closeSuccess} = useAlert();
 
     const [signUp, { loading: signupLoading, error: signupError, data: signupData }] = useMutation(SIGNUP, {
         onCompleted(data) {
             if (data?.signUp?.success === true) {
-                navigate('/');
+                showSuccess(data?.signUp?.message);
+                setTimeout(() => {
+                    navigate('/');
+                }, 1000);
             }
         },
         onError(error) {
@@ -49,6 +54,7 @@ const Signup = () => {
             justifyContent: "center",
             alignItems: "center", minHeight: "100vh"
         }}>
+            <Success open={openSuccess} message={messageSuccess} onClose={closeSuccess} />
             <Paper variant="elevation" sx={{
                 ...theme.glassCard,
                 width: "40%",

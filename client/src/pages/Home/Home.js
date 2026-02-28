@@ -37,6 +37,7 @@ import { defineMessages, FormattedMessage, FormattedNumber, useIntl } from 'reac
 import "./Home.css";
 import UpsertTransaction from "./UpsertTransaction";
 import { ThemeToggleContext } from "../../theme/ThemeProviderWrapper";
+import useAlert, { Success, Error, Warning } from '../../components/Alert/CustomAlert';
 
 
 const messages = defineMessages({
@@ -131,6 +132,8 @@ const Home = () => {
   const { mode, toggleTheme } = useContext(ThemeToggleContext);
   const theme = useTheme();
   const navigate = useNavigate();
+  const {open: openSuccess, message: messageSuccess, handleOpen: showSuccess, handleClose: closeSuccess} = useAlert();
+  const {open: openError, message: messageError, handleOpen: showError, handleClose: closeError} = useAlert();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const name = localStorage.getItem("name") || "";
@@ -253,253 +256,261 @@ const Home = () => {
   }, []);
 
   return (
-    <Container
-      maxWidth="xl"
-      sx={{ ...theme.glassCard, padding: '20px', marginY: '30px', marginX: 'auto' }}
-    >
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 1 }} sx={{ alignContent: "center" }}>
-          <Tooltip
-            title={mode === "dark" ? "Dark Mode" : "Light Mode"}
-            placement="bottom-end"
-          >
-            <FormControlLabel
-              control={
-                <MaterialUISwitch sx={{ m: 1 }} checked={mode === "dark"} />
-              }
-              // label="Mode"
-              labelPlacement="bottom"
-              onClick={toggleTheme}
-            />
-          </Tooltip>
-        </Grid>
-        <Grid
-          size={{ xs: 10 }}
-          sx={{ display: "flex", justifyContent: "center" }}
-        >
-          <Typography variant="h3" color="#7C7C7C">
-            Expense Tracker
-          </Typography>
-        </Grid>
-        <Grid size={{ xs: 1 }} sx={{ alignContent: "center" }}>
-          <Tooltip title="My Account">
-            <IconButton onClick={handleClick}>
-              <Avatar sx={{ width: 45, height: 45 }}>{displayName}</Avatar>
-            </IconButton>
-          </Tooltip>
-          <Menu
-            anchorEl={anchorEl}
-            id="account-menu"
-            open={open}
-            onClose={handleClose}
-            onClick={handleClose}
-            slotProps={{
-              paper: {
-                elevation: 0,
-                sx: {
-                  overflow: 'visible',
-                  ...theme.glassCard,
-                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                  mt: 1.5,
-                },
-              },
-            }}
-            anchorOrigin={{ horizontal: 'right' }}
-          >
-            <MenuItem disabled sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-            }}>
-              <Typography variant="body2" fontSize="20px" fontWeight="600">
-                {name.charAt(0).toUpperCase() + name.slice(1)}
-              </Typography>
-              <Typography variant="caption" color="textSecondary">
-                {email}
-              </Typography>
-            </MenuItem>
-            <MenuItem onClick={handleLogout}>
-              <ListItemIcon>
-                <Logout fontSize="small" />
-              </ListItemIcon>
-              Logout
-            </MenuItem>
-          </Menu>
-        </Grid>
-        <Grid size={{ xs: 12 }}>
-          <Divider sx={{ ...theme.glassCard }} />
-        </Grid>
-
-        <Grid size={{ xs: 8 }}>
-          <Stack spacing={2}>
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 6 }}>
-                <UpsertTransaction
-                  transactionType={"income"}
-                  getTransactionByMonthRefetch={getTransactionByMonthRefetch}
-                />
-              </Grid>
-              <Grid size={{ xs: 6 }}>
-                <UpsertTransaction
-                  transactionType={"expense"}
-                  getTransactionByMonthRefetch={getTransactionByMonthRefetch}
-                />
-              </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 4 }}>
-                <Card sx={{ ...theme.glassCard }}>
-                  <CardActionArea>
-                    <CardContent sx={{ height: "158px" }}>
-                      <Typography variant="h5">Total Income</Typography>
-                      <Typography variant="h3" color="text.secondary">
-                        <FormattedNumber value={getTransactionByMonthData?.getTransactionByMonth?.totalIncome || 0} style="currency" currency="INR" />
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-              <Grid size={{ xs: 4 }}>
-                <Card sx={{ ...theme.glassCard }}>
-                  <CardActionArea>
-                    <CardContent sx={{ height: "158px" }}>
-                      <Typography variant="h5">Total Expense</Typography>
-                      <Typography variant="h3" color="text.secondary">
-                        <FormattedNumber value={getTransactionByMonthData?.getTransactionByMonth?.totalExpense || 0} style="currency" currency="INR" />
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-              <Grid size={{ xs: 4 }}>
-                <Card sx={{ ...theme.glassCard }}>
-                  <CardActionArea>
-                    <CardContent sx={{ height: "158px" }}>
-                      <Typography variant="h5">Available Balance</Typography>
-                      <Typography variant="h3" color="text.secondary">
-                        <FormattedNumber value={getTransactionByMonthData?.getTransactionByMonth?.availableBalance || 0} style="currency" currency="INR" />
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            </Grid>
-          </Stack>
-        </Grid>
-        <Grid size={{ xs: 4 }} sx={{ ...theme.glassCard, alignContent: "center" }}>
-          <PieChart
-            series={[
-              {
-                data: [
-                  ...chartData,
-                  ...(getTransactionByMonthData?.getTransactionByMonth?.availableBalance > 0 ? [{
-                    value: getTransactionByMonthData?.getTransactionByMonth?.availableBalance,
-                    label: `Available Balance ${(getTransactionByMonthData?.getTransactionByMonth?.availableBalance / getTransactionByMonthData?.getTransactionByMonth?.totalIncome * 100).toFixed(0)}%`,
-                    color: "#249640",
-                  }] : []
-                  )
-                ],
-              },
-            ]}
-            width={200}
-            height={200}
-          />
-        </Grid>
-        <Grid size={{ xs: 4 }} sx={{
-          ...theme.glassCard,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar
-              sx={{
-                width: "100%",
-                "& .MuiPickersDay-root": { height: 37, width: 40, fontSize: "1.40rem", marginX: "8px", marginY: "0.3px" },
-                "& .MuiTypography-root": { height: 37, width: 40, fontSize: "1.50rem", marginX: "8px", marginY: "8px" },
-                "& .MuiPickersCalendarHeader-label": { fontSize: "1.6rem" },
-              }}
-              views={["year", "month", "day"]}
-              onMonthChange={handleMonthChange}
-            />
-          </LocalizationProvider>
-        </Grid>
-        <Grid size={{ xs: 8 }}>
-          <TableContainer sx={{ ...theme.glassCard, height: "435px" }} component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>
-                    <Typography variant="h5">Date</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="h5">Category</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="h5">Description</Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="h5">Amount</Typography>
-                  </TableCell>
-                  {
-                    getTransactionByMonthData?.getTransactionByMonth?.transactions?.length ?
-                      <TableCell sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Tooltip title="Export">
-                          <IconButton>
-                            <DownloadOutlinedIcon onClick={() => handleExportToCSV(getTransactionByMonthData?.getTransactionByMonth?.transactions)} />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                      :
-                      <TableCell />
-                  }
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {getTransactionByMonthData?.getTransactionByMonth?.transactions?.length ? 
-                  (getTransactionByMonthData?.getTransactionByMonth?.transactions?.map((data) => (
-                    <TableRow>
-                      <TableCell>{new Date(Number(data?.date)).toLocaleString()}</TableCell>
-                      <TableCell>{data?.category}</TableCell>
-                      <TableCell>{data?.description}</TableCell>
-                      <TableCell align="right">
-                        <Typography
-                          color={
-                            data?.transactionType === "income" ? "green" : "red"
-                          }
-                        >
-                          {data?.transactionType === "income" ? "+" : "-"}{" "}
-                          {<FormattedNumber value={data?.amount} style="currency" currency="INR" />}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <UpsertTransaction transactionType={data?.transactionType} getTransactionByMonthRefetch={getTransactionByMonthRefetch} getTransactionData={data} />
-                        <Tooltip title="Delete">
-                          <IconButton>
-                            <DeleteOutlineOutlinedIcon onClick={() => handleDelete(data?._id)} />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={5}>
-                        <Typography variant="body1">
-                          <Box fontWeight="fontWeightBold" m={19.4} display="flex" justifyContent="center">
-                            <FormattedMessage {...messages.NoRecordsLabel} />
-                          </Box>
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )
+    <Box>
+      <Success open={openSuccess} message={messageSuccess} onClose={closeSuccess} />
+      <Error open={openError} message={messageError} onClose={closeError} />
+      <Container
+        maxWidth="xl"
+        sx={{ ...theme.glassCard, padding: '20px', marginY: '30px', marginX: 'auto' }}
+      >
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 1 }} sx={{ alignContent: "center" }}>
+            <Tooltip
+              title={mode === "dark" ? "Dark Mode" : "Light Mode"}
+              placement="bottom-end"
+            >
+              <FormControlLabel
+                control={
+                  <MaterialUISwitch sx={{ m: 1 }} checked={mode === "dark"} />
                 }
-              </TableBody>
-            </Table>
-          </TableContainer>
+                // label="Mode"
+                labelPlacement="bottom"
+                onClick={toggleTheme}
+              />
+            </Tooltip>
+          </Grid>
+          <Grid
+            size={{ xs: 10 }}
+            sx={{ display: "flex", justifyContent: "center" }}
+          >
+            <Typography variant="h3" color="#7C7C7C">
+              Expense Tracker
+            </Typography>
+          </Grid>
+          <Grid size={{ xs: 1 }} sx={{ alignContent: "center" }}>
+            <Tooltip title="My Account">
+              <IconButton onClick={handleClick}>
+                <Avatar sx={{ width: 45, height: 45 }}>{displayName}</Avatar>
+              </IconButton>
+            </Tooltip>
+            <Menu
+              anchorEl={anchorEl}
+              id="account-menu"
+              open={open}
+              onClose={handleClose}
+              onClick={handleClose}
+              slotProps={{
+                paper: {
+                  elevation: 0,
+                  sx: {
+                    overflow: 'visible',
+                    ...theme.glassCard,
+                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                    mt: 1.5,
+                  },
+                },
+              }}
+              anchorOrigin={{ horizontal: 'right' }}
+            >
+              <MenuItem disabled sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}>
+                <Typography variant="body2" fontSize="20px" fontWeight="600">
+                  {name.charAt(0).toUpperCase() + name.slice(1)}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {email}
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>
+                <ListItemIcon>
+                  <Logout fontSize="small" />
+                </ListItemIcon>
+                Logout
+              </MenuItem>
+            </Menu>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <Divider sx={{ ...theme.glassCard }} />
+          </Grid>
+
+          <Grid size={{ xs: 8 }}>
+            <Stack spacing={2}>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6 }}>
+                  <UpsertTransaction
+                    transactionType={"income"}
+                    getTransactionByMonthRefetch={getTransactionByMonthRefetch}
+                    showSuccess={showSuccess}
+                    showError={showError}
+                  />
+                </Grid>
+                <Grid size={{ xs: 6 }}>
+                  <UpsertTransaction
+                    transactionType={"expense"}
+                    getTransactionByMonthRefetch={getTransactionByMonthRefetch}
+                    showSuccess={showSuccess}
+                    showError={showError}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 4 }}>
+                  <Card sx={{ ...theme.glassCard }}>
+                    <CardActionArea>
+                      <CardContent sx={{ height: "158px" }}>
+                        <Typography variant="h5">Total Income</Typography>
+                        <Typography variant="h3" color="text.secondary">
+                          <FormattedNumber value={getTransactionByMonthData?.getTransactionByMonth?.totalIncome || 0} style="currency" currency="INR" />
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+                <Grid size={{ xs: 4 }}>
+                  <Card sx={{ ...theme.glassCard }}>
+                    <CardActionArea>
+                      <CardContent sx={{ height: "158px" }}>
+                        <Typography variant="h5">Total Expense</Typography>
+                        <Typography variant="h3" color="text.secondary">
+                          <FormattedNumber value={getTransactionByMonthData?.getTransactionByMonth?.totalExpense || 0} style="currency" currency="INR" />
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+                <Grid size={{ xs: 4 }}>
+                  <Card sx={{ ...theme.glassCard }}>
+                    <CardActionArea>
+                      <CardContent sx={{ height: "158px" }}>
+                        <Typography variant="h5">Available Balance</Typography>
+                        <Typography variant="h3" color="text.secondary">
+                          <FormattedNumber value={getTransactionByMonthData?.getTransactionByMonth?.availableBalance || 0} style="currency" currency="INR" />
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Stack>
+          </Grid>
+          <Grid size={{ xs: 4 }} sx={{ ...theme.glassCard, alignContent: "center" }}>
+            <PieChart
+              series={[
+                {
+                  data: [
+                    ...chartData,
+                    ...(getTransactionByMonthData?.getTransactionByMonth?.availableBalance > 0 ? [{
+                      value: getTransactionByMonthData?.getTransactionByMonth?.availableBalance,
+                      label: `Available Balance ${(getTransactionByMonthData?.getTransactionByMonth?.availableBalance / getTransactionByMonthData?.getTransactionByMonth?.totalIncome * 100).toFixed(0)}%`,
+                      color: "#249640",
+                    }] : []
+                    )
+                  ],
+                },
+              ]}
+              width={200}
+              height={200}
+            />
+          </Grid>
+          <Grid size={{ xs: 4 }} sx={{
+            ...theme.glassCard,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateCalendar
+                sx={{
+                  width: "100%",
+                  "& .MuiPickersDay-root": { height: 37, width: 40, fontSize: "1.40rem", marginX: "8px", marginY: "0.3px" },
+                  "& .MuiTypography-root": { height: 37, width: 40, fontSize: "1.50rem", marginX: "8px", marginY: "8px" },
+                  "& .MuiPickersCalendarHeader-label": { fontSize: "1.6rem" },
+                }}
+                views={["year", "month", "day"]}
+                onMonthChange={handleMonthChange}
+              />
+            </LocalizationProvider>
+          </Grid>
+          <Grid size={{ xs: 8 }}>
+            <TableContainer sx={{ ...theme.glassCard, height: "435px" }} component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <Typography variant="h5">Date</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="h5">Category</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="h5">Description</Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography variant="h5">Amount</Typography>
+                    </TableCell>
+                    {
+                      getTransactionByMonthData?.getTransactionByMonth?.transactions?.length ?
+                        <TableCell sx={{ display: "flex", justifyContent: "flex-end" }}>
+                          <Tooltip title="Export">
+                            <IconButton>
+                              <DownloadOutlinedIcon onClick={() => handleExportToCSV(getTransactionByMonthData?.getTransactionByMonth?.transactions)} />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                        :
+                        <TableCell />
+                    }
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {getTransactionByMonthData?.getTransactionByMonth?.transactions?.length ? 
+                    (getTransactionByMonthData?.getTransactionByMonth?.transactions?.map((data) => (
+                      <TableRow>
+                        <TableCell>{new Date(Number(data?.date)).toLocaleString()}</TableCell>
+                        <TableCell>{data?.category}</TableCell>
+                        <TableCell>{data?.description}</TableCell>
+                        <TableCell align="right">
+                          <Typography
+                            color={
+                              data?.transactionType === "income" ? "green" : "red"
+                            }
+                          >
+                            {data?.transactionType === "income" ? "+" : "-"}{" "}
+                            {<FormattedNumber value={data?.amount} style="currency" currency="INR" />}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={{ display: "flex", justifyContent: "flex-end" }}>
+                          <UpsertTransaction transactionType={data?.transactionType} getTransactionByMonthRefetch={getTransactionByMonthRefetch} getTransactionData={data} showSuccess={showSuccess} showError={showError} />
+                          <Tooltip title="Delete">
+                            <IconButton>
+                              <DeleteOutlineOutlinedIcon onClick={() => handleDelete(data?._id)} />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={5}>
+                          <Typography variant="body1">
+                            <Box fontWeight="fontWeightBold" m={19.4} display="flex" justifyContent="center">
+                              <FormattedMessage {...messages.NoRecordsLabel} />
+                            </Box>
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  }
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
         </Grid>
-      </Grid>
-    </Container>
+      </Container>
+    </Box>
   );
 };
 

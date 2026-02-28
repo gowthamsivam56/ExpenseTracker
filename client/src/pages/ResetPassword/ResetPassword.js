@@ -8,13 +8,13 @@ import { TextField } from "formik-mui";
 import Button from "@mui/material/Button";
 import { Box } from '@mui/material';
 import { gql, useMutation } from "@apollo/client";
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { useParams } from "react-router-dom";
 import { regex } from '../../config';
+import useAlert, { Success, Error, Warning } from '../../components/Alert/CustomAlert';
 
 const RESETPASSWORD = gql`
     mutation resetPassword($userId: ID!, $token: String!, $password: String!) {
@@ -29,13 +29,19 @@ const RESETPASSWORD = gql`
 const ResetPassword = () => {
     const theme = useTheme();
     const navigate = useNavigate();
+    const {open: openSuccess, message: messageSuccess, handleOpen: showSuccess, handleClose: closeSuccess} = useAlert();
     const [generalError, setGeneralError] = React.useState("");
     const [showPassword, setShowPassword] = React.useState(false);
     const { userId, token } = useParams();
 
     const [resetPassword, { loading: resetPasswordLoading, error: resetPasswordError, data: resetPasswordData }] = useMutation(RESETPASSWORD, {
         onCompleted(data) {
-            navigate('/');
+            if (data?.resetPassword?.success === true) {
+                showSuccess(data?.resetPassword?.message);
+                setTimeout(() => {
+                    navigate('/');
+                }, 1000);
+            }
         },
         onError(error) {
             console.log(`error`,error);
@@ -48,6 +54,7 @@ const ResetPassword = () => {
             justifyContent: "center",
             alignItems: "center", minHeight: "100vh"
         }}>
+            <Success open={openSuccess} message={messageSuccess} onClose={closeSuccess} />
             <Paper variant="elevation" sx={{
                 ...theme.glassCard,
                 width: "40%",

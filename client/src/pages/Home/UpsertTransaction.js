@@ -50,7 +50,7 @@ const UPDATE_TRANSACTION = gql`
 
 const UpsertTransaction = (props) => {
   const theme = useTheme();
-  const { transactionType, getTransactionByMonthRefetch, getTransactionData } = props;
+  const { transactionType, getTransactionByMonthRefetch, getTransactionData, showSuccess, showError } = props;
   const [open, setOpen] = React.useState(false);
 
   const categories =
@@ -78,20 +78,40 @@ const UpsertTransaction = (props) => {
   const [addTransaction, { loading: addTransactionLoading, error: addTransactionError, data: addTransactionData }] = useMutation(ADD_TRANSACTION, {
     onCompleted(data) {
       if (data?.addTransaction?.success === true) {
+        if(transactionType === "income") {
+          showSuccess("Income Added Successfully");
+        }
+        else{
+          showSuccess("Expense Added Successfully");
+        }
+      }
+      else{
+        showError(data?.addTransaction?.message)
       }
     },
     onError(error) {
       console.log(`error`);
+      showError(error)
     },
   });
 
   const [updateTransaction, { loading: updateTransactionLoading, error: updateTransactionError, data: updateTransactionData }] = useMutation(UPDATE_TRANSACTION, {
     onCompleted(data) {
       if (data?.updateTransaction?.success === true) {
+        if(transactionType === "income") {
+          showSuccess("Income Updated Successfully");
+        }
+        else{
+          showSuccess("Expense Updated Successfully");
+        }
+      }
+      else {
+        showError(data?.updateTransaction?.message)
       }
     },
     onError(error) {
       console.log(`error`);
+      showError(error)
     },
   });
 
