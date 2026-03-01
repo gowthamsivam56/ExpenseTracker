@@ -172,13 +172,18 @@ const Home = () => {
 
   const [deleteTransactionById, { loading: deleteTransactionByIdLoading, error: deleteTransactionByIdError, data: deleteTransactionByIdData }] = useMutation(DELETE_TRANSACTION_BY_ID, {
     onCompleted(data) {
-      if (data.deleteTransactionById.success === true) {
+      if (data?.deleteTransactionById?.success === true) {
+        showSuccess(data?.deleteTransactionById?.message);
         // getTransactionRefetch();
         getTransactionByMonthRefetch();
+      }
+      else {
+        showError(data?.deleteTransactionById?.message);
       }
     },
     onError(error) {
       console.log(`error`);
+      showError(error)
     }
   });
 
