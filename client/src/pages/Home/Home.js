@@ -490,8 +490,8 @@ const Home = () => {
                         <TableCell sx={{ display: "flex", justifyContent: "flex-end" }}>
                           <UpsertTransaction transactionType={data?.transactionType} getTransactionByMonthRefetch={getTransactionByMonthRefetch} getTransactionData={data} showSuccess={showSuccess} showError={showError} />
                           <Tooltip title="Delete">
-                            <IconButton>
-                              <DeleteOutlineOutlinedIcon onClick={() => handleDelete(data?._id)} />
+                            <IconButton onClick={() => handleDelete(data?._id)} disabled={deleteTransactionByIdLoading}>
+                              <DeleteOutlineOutlinedIcon />
                             </IconButton>
                           </Tooltip>
                         </TableCell>

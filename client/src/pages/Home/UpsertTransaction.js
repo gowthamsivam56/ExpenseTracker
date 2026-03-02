@@ -156,9 +156,9 @@ const UpsertTransaction = (props) => {
           await updateTransaction({ variables: { _id: getTransactionData?._id, ...values, amount:Number(values?.amount), transactionType } })
           :
           await addTransaction({ variables: { ...values, amount:Number(values?.amount), transactionType } });
-        await getTransactionByMonthRefetch();
         resetForm();
         setOpen(false);
+        await getTransactionByMonthRefetch();
       }}
     >
       {({ submitForm, isSubmitting, values, setFieldValue }) => (
