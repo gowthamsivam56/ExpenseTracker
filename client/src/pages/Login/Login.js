@@ -46,7 +46,7 @@ const Login = () => {
                 localStorage.setItem("name", data?.logIn?.user?.fullname);
                 localStorage.setItem("email", data?.logIn?.user?.email);
                 setTimeout(() => {
-                    navigate('/home');
+                    window.location.href = '/home';
                 }, 300);
             }
         },

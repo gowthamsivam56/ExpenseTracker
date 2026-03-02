@@ -198,7 +198,7 @@ const Home = () => {
   const handleLogout = () => {
     setAnchorEl(null);
     localStorage.clear();
-    navigate('/');
+    window.location.href = '/';
   }
 
   const handleDelete = async (_id) => {
