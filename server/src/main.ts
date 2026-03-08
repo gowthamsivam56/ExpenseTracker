@@ -9,6 +9,7 @@ import { connectDB } from './clients/mongo';
 import { resolvers } from './gql/resolvers';
 import { readFileSync } from 'fs';
 import { gql } from "graphql-tag";
+import jwt from "jsonwebtoken";
 
 
 // const typeDefs = `
@@ -45,7 +46,20 @@ const startServer = async () => {
         express.json(),
         expressMiddleware(server, {
             context: async ({ req }) => {
+                const authHeader = req.headers.authorization || '';
+                const token = authHeader.split(' ')[1];
+                let decodeUser = null;
+                if(token) {
+                    try {
+                        decodeUser = jwt.verify(token, process.env.JWT_SECRET as string);
+                    } catch (e: any) {
+                        console.log("JWT Error:", e.message);
+                    }
+
+                }
+
                 const info = {
+                    token: decodeUser,
                     dbName: req.headers['dbname'] || '',
                 };
                 return { info };

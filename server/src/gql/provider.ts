@@ -2,7 +2,8 @@ import { checkUser, signup, createUserDB, addtransaction, updatetransaction, del
 import { GraphQLError } from "graphql";
 import bcrypt from "bcrypt";
 import { randomBytes } from "crypto";
-import { sendResetEmail } from "../utils/mailer"
+import { sendResetEmail } from "../utils/mailer";
+import { generateToken } from "../utils/jwt";
 
 
 export async function signUp(args: any) {
@@ -68,10 +69,13 @@ export async function logIn(args: any) {
             };
         }
 
+        const token = generateToken(user);
+
         return {
             code: "I_LOGIN_SUCCESS",
             success: true,
             message: "Login successfully",
+            token,
             user: {
                 fullname: user.fullname,
                 email: user.email,
@@ -188,9 +192,12 @@ export async function getTransaction(dbName: string) {
     }
 }
 
-export async function addTransaction(args: any, dbName: string) {
+export async function addTransaction(args: any, info: any) {
     try {
-        const { date, Category, Description, Amount } = args;
+        const { token, dbName } = info;
+        if (!token) {
+            throw new Error("Unauthorized");
+        }
         const data = await addtransaction(dbName, args);
         console.log(`data`, data);
         if (data) {
@@ -207,12 +214,16 @@ export async function addTransaction(args: any, dbName: string) {
             };
         }
     } catch (e: any) {
-        throw e.message;
+        throw new Error(e.message);
     }
 }
 
-export async function updateTransaction(args: any, dbName: string) {
+export async function updateTransaction(args: any, info: any) {
     try {
+        const { token, dbName } = info;
+        if (!token) {
+            throw new Error("Unauthorized");
+        }
         const { _id, ...update } = args;
         const data = await updatetransaction(dbName, _id, update);
         console.log(`data`, data);
@@ -230,12 +241,16 @@ export async function updateTransaction(args: any, dbName: string) {
             };
         }
     } catch (e: any) {
-        throw e.message;
+        throw new Error(e.message);
     }
 }
 
-export async function deleteTransactionById({ _id }: any, dbName: string) {
+export async function deleteTransactionById({ _id }: any, info: any) {
     try {
+        const { token, dbName } = info;
+        if (!token) {
+            throw new Error("Unauthorized");
+        }
         const data = await deletetransactionById(dbName, _id);
         if (data) {
             return {
@@ -251,13 +266,17 @@ export async function deleteTransactionById({ _id }: any, dbName: string) {
             };
         }
     } catch (e: any) {
-        throw e.message;
+        throw new Error(e.message);
     }
 }
 
 
-export async function getTransactionByMonth(args: any, dbName: string) {
+export async function getTransactionByMonth(args: any, info: any) {
     try {
+        const { token, dbName } = info;
+        if (!token) {
+            throw new Error("Unauthorized");
+        }
         console.log(`getTransactionByMonth called....`);
         const transactions = await gettransactionByMonth(dbName, args);
         const totalIncome = transactions.filter((f) => f?.transactionType === 'income').reduce((total, data) => Number(data?.amount) + total, 0);
@@ -270,10 +289,6 @@ export async function getTransactionByMonth(args: any, dbName: string) {
             transactions,
         };
     } catch (e: any) {
-        throw new GraphQLError(e.message, {
-            extensions: {
-                code: "E_GET_TRANSACTION_BY_MONTH_ERROR",
-            },
-        });
+       throw new Error(e.message);
     }
 }

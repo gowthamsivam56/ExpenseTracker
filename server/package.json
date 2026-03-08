@@ -23,11 +23,13 @@
     "googleapis": "^171.4.0",
     "graphql": "^16.11.0",
     "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.3",
     "mongodb": "^6.17.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.3",
     "copyfiles": "^2.4.1",
     "nodemon": "^3.1.10",
