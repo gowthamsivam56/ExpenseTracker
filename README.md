@@ -79,6 +79,8 @@ npm install bcrypt
 npm install -D @types/bcrypt
 npm install graphql-tag
 npm install googleapis
+npm install jsonwebtoken
+npm install --save-dev @types/jsonwebtoken
 ```
 
 Update `.gitignore`;
