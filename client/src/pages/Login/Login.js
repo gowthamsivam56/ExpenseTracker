@@ -22,6 +22,7 @@ const LOGIN = gql`
             code
             success
             message
+            token
             user{
                 fullname
                 email
@@ -42,6 +43,7 @@ const Login = () => {
         onCompleted(data) {
             if (data?.logIn?.success === true) {
                 showSuccess(data?.logIn?.message);
+                localStorage.setItem("token", data?.logIn?.token);
                 localStorage.setItem("dbName", data?.logIn?.user?.dbName);
                 localStorage.setItem("name", data?.logIn?.user?.fullname);
                 localStorage.setItem("email", data?.logIn?.user?.email);

@@ -91,7 +91,7 @@ const UpsertTransaction = (props) => {
     },
     onError(error) {
       console.log(`error`);
-      showError(error)
+      showError(error?.message)
     },
   });
 
@@ -111,7 +111,7 @@ const UpsertTransaction = (props) => {
     },
     onError(error) {
       console.log(`error`);
-      showError(error)
+      showError(error?.message)
     },
   });
 

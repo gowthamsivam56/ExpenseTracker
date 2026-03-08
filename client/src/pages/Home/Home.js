@@ -165,7 +165,11 @@ const Home = () => {
         setMonthlytransactions(data?.getTransactionByMonth);
       },
       onError(error) {
-        console.log(`error`);
+        if (error?.message === "Unauthorized") {
+          localStorage.clear();
+          showError(error?.message);
+          window.location.href = "/";  
+        }
       },
     }
   );
@@ -183,7 +187,7 @@ const Home = () => {
     },
     onError(error) {
       console.log(`error`);
-      showError(error)
+      showError(error?.message)
     }
   });
 

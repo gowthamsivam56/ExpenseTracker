@@ -6,13 +6,19 @@ import reportWebVitals from './reportWebVitals';
 import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
 import { IntlProvider } from 'react-intl';
 
-const dbName = localStorage.getItem("dbName") || "";
+// const dbName = localStorage.getItem("dbName") || "";
 
 const client = new ApolloClient({
   link: new HttpLink({
     uri: process.env.REACT_APP_API_URL,
     headers: {
-      dbname: dbName || '',
+      get authorization() {
+        const token = localStorage.getItem("token");
+        return token ? `Bearer ${token}` : "";
+      },
+      get dbname() {
+        return localStorage.getItem("dbName") || "";
+      }
     },
   }),
   cache: new InMemoryCache()
