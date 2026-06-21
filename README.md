@@ -1,4 +1,4 @@
-# MyWebpage
+# ExpenseTracker
 
 ## Set up backend with Apollo Server, GraphQL, and TypeScript
 
