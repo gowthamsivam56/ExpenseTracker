@@ -1,6 +1,9 @@
 {
   "name": "server",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=24"
+  },
   "main": "dist/main.js",
   "scripts": {
     "build": "tsc && npm run copy-files",
